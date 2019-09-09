@@ -14,17 +14,29 @@ def main():
     strcnum = str(cnum)
     strhnum = str(hnum)
     global array
-    array = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    array = [
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+         " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]]
 
     global startposy
     global startposx
@@ -88,33 +100,45 @@ def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
 
 
 def alkene():
-    array[startposy][startposx] = 1
-    array[startposy + 1][startposx] = "|"
-    array[startposy - 1][startposx] = "|"
-    array[startposy][startposx + 1] = "-"
-    array[startposy][startposx - 1] = "-"
-    array[startposy][startposx - 2] = "H"
-    array[startposy][(2 * cnum) + 2] = "H"
-    array[startposy + 2][startposx] = "H"
-    array[startposy - 2][startposx] = "H"
-    if cnum > 1:
+    for i in range(cnum // 2):
+        array[startposy][startposx] = 1
+        array[startposy + 1][startposx] = "|"
+        array[startposy - 1][startposx] = "|"
+        array[startposy][startposx + 1] = "-"
+        array[startposy][startposx - 1] = "-"
+        array[startposy][startposx - 2] = "H"
+        array[startposy][startposx + (2 * cnum)] = "H"
+        array[startposy + 2][startposx] = "H"
+        array[startposy - 2][startposx] = "H"
+        if cnum > 1:
+            for x in range(cnum - 1):
+                for row in array:
+                    for elem in row:
+                        if elem == (x + 1):
+                            colnum = row.index(x + 1)
+                array[startposy][colnum + 2] = x + 2
+                array[startposy + 1][colnum + 2] = "|"
+                array[startposy - 1][colnum + 2] = "|"
+                array[startposy - 2][colnum + 2] = "H"
+                array[startposy + 2][colnum + 2] = "H"
+                array[startposy][colnum + 3] = "-"
+                array[startposy][colnum + 1] = "-"
+
+    for i in range(cnum // 2):
         for x in range(cnum - 1):
             for row in array:
                 for elem in row:
                     if elem == (x + 1):
                         colnum = row.index(x + 1)
-            array[startposy][colnum + 2] = x + 2
-            array[startposy + 1][colnum + 2] = "|"
-            array[startposy - 1][colnum + 2] = "|"
-            array[startposy - 2][colnum + 2] = "H"
-            array[startposy + 2][colnum + 2] = "H"
+            array[startposy][colnum + 3] = "="
+            array[startposy + 2][colnum + 2] = " "
+            for row in array:
+                for elem in row:
+                    print(elem, end=' ')
+                print()
+            print(" ")
             array[startposy][colnum + 3] = "-"
-            array[startposy][colnum + 1] = "-"
-
-    for row in array:
-        for elem in row:
-            print(elem, end=' ')
-        print()
+            array[startposy + 2][colnum + 2] = "H"
 
     print("""
   """)
