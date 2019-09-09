@@ -1,4 +1,14 @@
 def main():
+    survey()
+    startpos()
+    createchain()
+    if straightchain == "Y":
+        straightchain1()
+    else:
+        multichain()
+
+
+def survey():
     global cnum
     global hnum
     global strcnum
@@ -6,13 +16,40 @@ def main():
     global SUB
     global SUBimp
     global SUP
+    global straightchain
     SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
     SUBimp = str.maketrans("(2n+2)-", "₍₂ₙ₊₂₎₋")
     SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-    cnum = int(input("Enter the number of carbon atoms: "))
-    hnum = int(input("Enter the number of hydrogen atoms: "))
+
+    while True:
+        try:
+            cnum = int(input("Enter the number of carbon atoms: "))
+            break
+        except:
+            print("Invalid input")
+            print(" ")
+
+    while True:
+        try:
+            hnum = int(input("Enter the number of hydrogen atoms: "))
+            break
+        except:
+            print("Invalid input")
+            print(" ")
+
+    while True:
+        straightchain = str(input("Is it a single chain hydrocarbon? Y or N: "))
+        if straightchain == "Y" or straightchain == "N":
+            break
+        else:
+            print("Invalid input")
+            print(" ")
+
     strcnum = str(cnum)
     strhnum = str(hnum)
+
+
+def startpos():
     global array
     array = [
         [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
@@ -37,7 +74,6 @@ def main():
          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
         [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]]
-
     global startposy
     global startposx
     rownum = 0
@@ -48,10 +84,8 @@ def main():
     startposy = rownum // 2
     startposx = (rowlen // 2) - cnum + 1
 
-    straightchain()
 
-
-def straightchain():
+def straightchain1():
     if hnum == (cnum * 2) + 2:
         alkane()
     elif hnum == cnum * 2:
@@ -63,30 +97,22 @@ def straightchain():
         main()
 
 
-def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
-    array[startposy][startposx] = 1
-    array[startposy + 1][startposx] = "|"
-    array[startposy - 1][startposx] = "|"
-    array[startposy][startposx + 1] = "-"
-    array[startposy][startposx - 1] = "-"
-    array[startposy][startposx - 2] = "H"
-    array[startposy][(2 * cnum) + startposx] = "H"
-    array[startposy + 2][startposx] = "H"
-    array[startposy - 2][startposx] = "H"
-    if cnum > 1:
-        for x in range(cnum - 1):
-            for row in array:
-                for elem in row:
-                    if elem == (x + 1):
-                        colnum = row.index(x + 1)
-            array[startposy][colnum + 2] = x + 2
-            array[startposy + 1][colnum + 2] = "|"
-            array[startposy - 1][colnum + 2] = "|"
-            array[startposy - 2][colnum + 2] = "H"
-            array[startposy + 2][colnum + 2] = "H"
-            array[startposy][colnum + 3] = "-"
-            array[startposy][colnum + 1] = "-"
+def createchain():
+    for x in range(cnum):
+        array[startposy][startposx + (2 * (x + 1)) - 2] = "H"
+        array[startposy][startposx + (2 * (x + 1)) + 2] = "H"
 
+    for x in range(cnum):
+        array[startposy][startposx + (2 * (x + 1))] = "C"
+        array[startposy + 1][startposx + (2 * (x + 1))] = "|"
+        array[startposy - 1][startposx + (2 * (x + 1))] = "|"
+        array[startposy - 2][startposx + (2 * (x + 1))] = "H"
+        array[startposy + 2][startposx + (2 * (x + 1))] = "H"
+        array[startposy][startposx + (2 * (x + 1)) - 1] = "-"
+        array[startposy][startposx + (2 * (x + 1)) + 1] = "-"
+
+
+def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
     for row in array:
         for elem in row:
             print(elem, end=' ')
@@ -100,45 +126,22 @@ def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
 
 
 def alkene():
-    for i in range(cnum // 2):
-        array[startposy][startposx] = 1
-        array[startposy + 1][startposx] = "|"
-        array[startposy - 1][startposx] = "|"
-        array[startposy][startposx + 1] = "-"
-        array[startposy][startposx - 1] = "-"
-        array[startposy][startposx - 2] = "H"
-        array[startposy][startposx + (2 * cnum)] = "H"
-        array[startposy + 2][startposx] = "H"
-        array[startposy - 2][startposx] = "H"
-        if cnum > 1:
-            for x in range(cnum - 1):
-                for row in array:
-                    for elem in row:
-                        if elem == (x + 1):
-                            colnum = row.index(x + 1)
-                array[startposy][colnum + 2] = x + 2
-                array[startposy + 1][colnum + 2] = "|"
-                array[startposy - 1][colnum + 2] = "|"
-                array[startposy - 2][colnum + 2] = "H"
-                array[startposy + 2][colnum + 2] = "H"
-                array[startposy][colnum + 3] = "-"
-                array[startposy][colnum + 1] = "-"
-
-    for i in range(cnum // 2):
-        for x in range(cnum - 1):
-            for row in array:
-                for elem in row:
-                    if elem == (x + 1):
-                        colnum = row.index(x + 1)
-            array[startposy][colnum + 3] = "="
-            array[startposy + 2][colnum + 2] = " "
-            for row in array:
-                for elem in row:
-                    print(elem, end=' ')
-                print()
-            print(" ")
-            array[startposy][colnum + 3] = "-"
-            array[startposy + 2][colnum + 2] = "H"
+    for x in range(cnum // 2):
+        array[startposy][startposx + (2 * (x + 1)) + 1] = "="
+        array[startposy - 2][startposx + (2 * (x + 1))] = " "
+        array[startposy - 2][startposx + (2 * (x + 2))] = " "
+        array[startposy - 1][startposx + (2 * (x + 1))] = " "
+        array[startposy - 1][startposx + (2 * (x + 2))] = " "
+        for row in array:
+            for elem in row:
+                print(elem, end=' ')
+            print()
+        print(" ")
+        array[startposy][startposx + (2 * (x + 1)) + 1] = "-"
+        array[startposy - 2][startposx + (2 * (x + 1))] = "H"
+        array[startposy - 2][startposx + (2 * (x + 2))] = "H"
+        array[startposy - 1][startposx + (2 * (x + 1))] = "|"
+        array[startposy - 1][startposx + (2 * (x + 2))] = "|"
 
     print("""
   """)
@@ -148,6 +151,10 @@ def alkene():
 
 
 def cyclic():
+    pass
+
+
+def multichain():
     pass
 
 
