@@ -14,17 +14,27 @@ def main():
     strcnum = str(cnum)
     strhnum = str(hnum)
     global array
-    array = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    array = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+    global startposy
+    global startposx
+    rownum = 0
+    for row in array:
+        rowlen = len(row)
+        rownum = rownum + 1
+
+    startposy = rownum // 2
+    startposx = (rowlen // 2) - cnum + 1
 
     straightchain()
 
@@ -42,25 +52,28 @@ def straightchain():
 
 
 def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
-    n = 1
-    i = 2 * n
-    array[i][i] = n
-    array[i + 1][i] = "|"
-    array[i - 1][i] = "|"
-    array[i][i + 1] = "-"
-    array[i][i - 1] = "-"
+    array[startposy][startposx] = 1
+    array[startposy + 1][startposx] = "|"
+    array[startposy - 1][startposx] = "|"
+    array[startposy][startposx + 1] = "-"
+    array[startposy][startposx - 1] = "-"
+    array[startposy][startposx - 2] = "H"
+    array[startposy][(2 * cnum) + startposx] = "H"
+    array[startposy + 2][startposx] = "H"
+    array[startposy - 2][startposx] = "H"
     if cnum > 1:
         for x in range(cnum - 1):
-            array[i][(x + 2) * i] = x + 2
-            array[i + 1][i * (x + 2)] = "|"
-            array[i - 1][i * (x + 2)] = "|"
-            array[i][(i * (x + 2)) + 1] = "-"
-            array[i][(i * (x + 2)) - 1] = "-"
-    for x in range(cnum):
-        array[i + 2][(2 * x) + 2] = "H"
-        array[i - 2][(2 * x) + 2] = "H"
-    array[i][i - 2] = "H"
-    array[i][(i * cnum) + 2] = "H"
+            for row in array:
+                for elem in row:
+                    if elem == (x + 1):
+                        colnum = row.index(x + 1)
+            array[startposy][colnum + 2] = x + 2
+            array[startposy + 1][colnum + 2] = "|"
+            array[startposy - 1][colnum + 2] = "|"
+            array[startposy - 2][colnum + 2] = "H"
+            array[startposy + 2][colnum + 2] = "H"
+            array[startposy][colnum + 3] = "-"
+            array[startposy][colnum + 1] = "-"
 
     for row in array:
         for elem in row:
@@ -75,25 +88,28 @@ def alkane():  # DOWN AND THEN ALONG - STARTS AT [0][0]
 
 
 def alkene():
-    n = 1
-    i = 2 * n
-    array[i][i] = n
-    array[i + 1][i] = "|"
-    array[i - 1][i] = "|"
-    array[i][i + 1] = "-"
-    array[i][i - 1] = "-"
+    array[startposy][startposx] = 1
+    array[startposy + 1][startposx] = "|"
+    array[startposy - 1][startposx] = "|"
+    array[startposy][startposx + 1] = "-"
+    array[startposy][startposx - 1] = "-"
+    array[startposy][startposx - 2] = "H"
+    array[startposy][(2 * cnum) + 2] = "H"
+    array[startposy + 2][startposx] = "H"
+    array[startposy - 2][startposx] = "H"
     if cnum > 1:
         for x in range(cnum - 1):
-            array[i][(x + 2) * i] = x + 2
-            array[i + 1][i * (x + 2)] = "|"
-            array[i - 1][i * (x + 2)] = "|"
-            array[i][(i * (x + 2)) + 1] = "-"
-            array[i][(i * (x + 2)) - 1] = "-"
-    for x in range(cnum):
-        array[i + 2][(2 * x) + 2] = "H"
-        array[i - 2][(2 * x) + 2] = "H"
-    array[i][i - 2] = "H"
-    array[i][(i * cnum) + 2] = "H"
+            for row in array:
+                for elem in row:
+                    if elem == (x + 1):
+                        colnum = row.index(x + 1)
+            array[startposy][colnum + 2] = x + 2
+            array[startposy + 1][colnum + 2] = "|"
+            array[startposy - 1][colnum + 2] = "|"
+            array[startposy - 2][colnum + 2] = "H"
+            array[startposy + 2][colnum + 2] = "H"
+            array[startposy][colnum + 3] = "-"
+            array[startposy][colnum + 1] = "-"
 
     for row in array:
         for elem in row:
