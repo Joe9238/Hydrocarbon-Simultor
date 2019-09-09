@@ -382,10 +382,6 @@ def definechain():
     elif hnum == cnum and cnum >= 6:
         cyclic()
 
-
-# DOWN AND THEN ALONG - STARTS AT [0][0]
-
-
 def alkene():
     array[startposy][(2 * chainnum) + 1] = "="
     array[startposy - 2][(2 * chainnum) + 2] = " "
