@@ -1,16 +1,20 @@
 def main():
     global cnum
     global hnum
-    global clist
-    global hlist
-    global cbondlist
+    global list1
+    global list2
+    global list3
+    global list4
+    global list5
     cnum = int(input("Enter the number of carbon atoms: "))
     hnum = int(input("Enter the number of hydrogen atoms: "))
     strcnum = str(cnum)
     strhnum = str(hnum)
-    hlist = []
-    clist = []
-    cb
+    list1 = [0, 0, 0, 0, 0]
+    list2 = [0, 0, 0, 0, 0]
+    list3 = [0, 0, 0, 0, 0]
+    list4 = [0, 0, 0, 0, 0]
+    list5 = [0, 0, 0, 0, 0]
 
     global alkane
     global alkene
@@ -20,24 +24,10 @@ def main():
     alkene = False
     cyclic = False
 
-    global a
-    a = hnum // cnum
-
     straightchain()
 
 
-def straightchain():  # create lists
-    for i in range(cnum):
-        if i == 0 or i == (cnum - 1):
-            clist.append(1)
-        else:
-            clist.append(2)
-    for i in range(hnum):
-        hlist.append(1)
-    straightchain2()
-
-
-def straightchain2():
+def straightchain():
     if hnum == (cnum * 2) + 2:
         alkane = True
         alkane()
@@ -53,8 +43,13 @@ def straightchain2():
 
 
 def alkane():
-    for i in range(cnum):
-        clist[i] == 2
-    clist[0] == 3
-    clist[-1] == 3
+    pass
+
+
+def alkene():
+    pass
+
+
+def cyclic():
+    pass
 
