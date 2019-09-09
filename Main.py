@@ -444,6 +444,3 @@ def cyclic():
 main_loop()
 pygame.quit()
 quit()
-
-# Notes to self:
-# Maybe make the variable selected irrelevant and place coordinates right into the if statement that changes text
