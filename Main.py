@@ -7,6 +7,8 @@ global cnum  # number of carbon atoms
 global hnum  # number of hydrogen atoms
 global strcnum  # versions of hnum and cnum as string for typing
 global strhnum
+global selected
+selected = ""
 cnum = 1  # minimum values for hydrogen and carbon
 hnum = 4
 strcnum = str(cnum)  # creating the string versions of hnum and cnum
@@ -246,14 +248,14 @@ def displayui():
         selected = "last"
     elif x >= 655 and y >= 30 and x <= 740 and y <= 70:
         selected = "home"
-    elif x >= 330 and y >= 500 and x <= 345 and y <= 525:
-        selected = "lastchain"
-    elif x >= 450 and y >= 500 and x <= 465 and y <= 525:
+    elif x >= 280 and y >= 500 and x <= 295 and y <= 525:
         selected = "nextchain"
+    elif x >= 160 and y >= 500 and x <= 175 and y <= 525:
+        selected = "lastchain"
 
     screen.fill(pgray)
     pygame.draw.rect(screen, white,
-                     ((screen_width / 2 - 450 / 2), 100, 450, 400))
+                     ((screen_width / 3.5 - 450 / 2), 100, 450, 400))
     main()
     title = titlefont.render('Display Page', True, black)
     if selected == "home":
@@ -278,9 +280,9 @@ def displayui():
         nextchain_rect = nextchain.get_rect()
         lastchain_rect = lastchain.get_rect()
         screen.blit(nextchain,
-                    (screen_width / 2 - (nextchain_rect[2] / 2 - 60), 500))
+                    (screen_width / 3.5 - (nextchain_rect[2] / 2 - 60), 500))
         screen.blit(lastchain,
-                    (screen_width / 2 - (lastchain_rect[2] / 2 + 60), 500))
+                    (screen_width / 3.5 - (lastchain_rect[2] / 2 + 60), 500))
         chainmax = cnum // 2
         chainmaxstr = str(chainmax)
         chainnumstr = str(chainnum)
@@ -289,7 +291,7 @@ def displayui():
 
         chaincount_rect = chaincount.get_rect()
         screen.blit(chaincount,
-                    (screen_width / 2 - (chaincount_rect[2] / 2), 500))
+                    (screen_width / 3.5 - (chaincount_rect[2] / 2), 500))
 
     title_rect = title.get_rect()
     homepage_rect = homepage.get_rect()
@@ -313,11 +315,11 @@ def displayinteractions():
             screenselect = 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:
             screenselect = 2
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 330 and y >= 500 and x <= 345 and y <= 525:
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 160 and y >= 500 and x <= 175 and y <= 525:
             global chainnum
             if chainnum > 1:
                 chainnum = chainnum - 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 450 and y >= 500 and x <= 465 and y <= 525:
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 280 and y >= 500 and x <= 295 and y <= 525:
             if chainnum < cnum // 2:
                 chainnum = chainnum + 1
 
@@ -382,6 +384,7 @@ def definechain():
     elif hnum == cnum and cnum >= 6:
         cyclic()
 
+
 def alkene():
     array[startposy][(2 * chainnum) + 1] = "="
     array[startposy - 2][(2 * chainnum) + 2] = " "
@@ -409,7 +412,7 @@ def printchain():
                 offsetx = offsetx + 2
         offsety = offsety + 30
 
-    spx = screen_width // 2 - offsetx // 2
+    spx = screen_width // 3.5 - offsetx // 2
     spy = screen_height // 2 - offsety // 2
 
     offsety = 0
