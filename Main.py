@@ -8,7 +8,6 @@ global hnum  # number of hydrogen atoms
 global strcnum  # versions of hnum and cnum as string for typing
 global strhnum
 global selected
-selected = ""
 cnum = 1  # minimum values for hydrogen and carbon
 hnum = 4
 strcnum = str(cnum)  # creating the string versions of hnum and cnum
@@ -27,6 +26,8 @@ titlefont = pygame.font.Font('freesansbold.ttf', 60)
 menufont = pygame.font.Font('freesansbold.ttf', 50)
 nextfont = pygame.font.Font('freesansbold.ttf', 40)
 surveyfont = pygame.font.Font('freesansbold.ttf', 25)
+infofont = pygame.font.Font('freesansbold.ttf', 18)
+subscriptfont = pygame.font.Font('freesansbold.ttf', 12)
 
 # Colors used in displays
 white = (255, 255, 255)
@@ -304,6 +305,25 @@ def displayui():
     screen.blit(previouspage,
                 (screen_width / 8 - (previouspage_rect[2] / 2), 30))
 
+    # Printing of information about the hydrocarbon
+    molformula2 = str(strcnum + "      " + strhnum)
+    formula1_text = infofont.render("The molecular formula is C" + "  " + "H",
+                                    True, black)
+    formula2_text = subscriptfont.render(molformula2, True, black)
+
+    if hnum == cnum * 2:
+        Type_text = infofont.render("The hydrocarbon is an alkene", True,
+                                    black)
+    elif hnum == (cnum * 2) + 2:
+        Type_text = infofont.render("The hydrocarbon is an alkane", True,
+                                    black)
+    elif hnum == cnum:
+        Type_text = infofont.render("The hydrocarbon is cyclic", True, black)
+
+    screen.blit(Type_text, (screen_width / 2 + 60, 120))
+    screen.blit(formula1_text, (screen_width / 2 + 60, 150))
+    screen.blit(formula2_text, (screen_width / 2 + 298, 157))
+
 
 def displayinteractions():
     for event in pygame.event.get():
@@ -424,8 +444,9 @@ def printchain():
             if elem == "—":
                 offsety = offsety - 2
                 offsetx = offsetx - 2
-            variablefontsize = 25
             character = surveyfont.render(elem, True, black)
+            if elem == "=":
+                character = surveyfont.render(elem, True, black, blue)
             screen.blit(character, (spx + offsetx, spy + offsety))
             offsetx = offsetx + 30
             if elem == "|":
