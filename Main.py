@@ -268,7 +268,7 @@ def displayui():
     else:
         previouspage = nextfont.render('Last', True, black, gray)
 
-    if hnum == cnum * 2:
+    if hnum == cnum * 2 and cnum > 3:
         if selected == "nextchain":
             nextchain = surveyfont.render('>', True, white, lgray)
         else:
@@ -307,9 +307,13 @@ def displayui():
 
     # Printing of information about the hydrocarbon
     molformula2 = str(strcnum + "      " + strhnum)
-    formula1_text = infofont.render("The molecular formula is C" + "  " + "H",
+    formula1_text = infofont.render("Molecular formula: C" + "  " + "H",
                                     True, black)
     formula2_text = subscriptfont.render(molformula2, True, black)
+    mr = (cnum * 12) + hnum
+    strmr = str(mr)
+    mr_text = infofont.render("Mr: " + strmr, True,
+                              black)
 
     if hnum == cnum * 2:
         Type_text = infofont.render("The hydrocarbon is an alkene", True,
@@ -322,7 +326,8 @@ def displayui():
 
     screen.blit(Type_text, (screen_width / 2 + 60, 120))
     screen.blit(formula1_text, (screen_width / 2 + 60, 150))
-    screen.blit(formula2_text, (screen_width / 2 + 298, 157))
+    screen.blit(formula2_text, (screen_width / 2 + 245, 157))
+    screen.blit(mr_text, (screen_width / 2 + 60, 180))
 
 
 def displayinteractions():
