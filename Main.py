@@ -242,6 +242,39 @@ def surveyinteractions():
             screenselect = 1
 
 
+def getname():
+    suffix = ""
+    if hnum == cnum * 2:
+        suffix = "ene"
+    elif hnum == (cnum * 2) + 2:
+        suffix = "ane"
+
+    prefix = ""
+    if cnum == 1:
+        prefix = "Meth"
+    elif cnum == 2:
+        prefix = "Eth"
+    elif cnum == 3:
+        prefix = "Prop"
+    elif cnum == 4:
+        prefix = "But"
+    elif cnum == 5:
+        prefix = "Pent"
+    elif cnum == 6:
+        prefix = "Hex"
+
+    if suffix == "" or prefix == "":
+      suffix = ""
+      prefix = ""
+    strname = prefix + suffix
+
+    name = titlefont.render(strname, True, black)
+
+    name_rect = name.get_rect()
+
+    screen.blit(name, (screen_width / 2 - (name_rect[2] / 2), 30))
+
+
 def displayui():
     displayinteractions()
     selected = ""
@@ -258,7 +291,7 @@ def displayui():
     pygame.draw.rect(screen, white,
                      ((screen_width / 3.5 - 450 / 2), 100, 450, 400))
     main()
-    title = titlefont.render('Display Page', True, black)
+    getname()
     if selected == "home":
         homepage = nextfont.render('Home', True, white, lgray)
     else:
@@ -294,11 +327,9 @@ def displayui():
         screen.blit(chaincount,
                     (screen_width / 3.5 - (chaincount_rect[2] / 2), 500))
 
-    title_rect = title.get_rect()
     homepage_rect = homepage.get_rect()
     previouspage_rect = previouspage.get_rect()
 
-    screen.blit(title, (screen_width / 2 - (title_rect[2] / 2), 30))
     screen.blit(
         homepage,
         (screen_width - (screen_width / 8) - (homepage_rect[2] / 2), 30))
@@ -307,13 +338,12 @@ def displayui():
 
     # Printing of information about the hydrocarbon
     molformula2 = str(strcnum + "      " + strhnum)
-    formula1_text = infofont.render("Molecular formula: C" + "  " + "H",
-                                    True, black)
+    formula1_text = infofont.render("Molecular formula: C" + "  " + "H", True,
+                                    black)
     formula2_text = subscriptfont.render(molformula2, True, black)
     mr = (cnum * 12) + hnum
     strmr = str(mr)
-    mr_text = infofont.render("Mr: " + strmr, True,
-                              black)
+    mr_text = infofont.render("Mr: " + strmr, True, black)
 
     if hnum == cnum * 2:
         Type_text = infofont.render("The hydrocarbon is an alkene", True,
