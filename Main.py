@@ -25,6 +25,8 @@ titlefont = pygame.font.Font('freesansbold.ttf', 60)
 menufont = pygame.font.Font('freesansbold.ttf', 50)
 nextfont = pygame.font.Font('freesansbold.ttf', 40)
 surveyfont = pygame.font.Font('freesansbold.ttf', 25)
+infofont = pygame.font.Font('freesansbold.ttf', 18)
+subscriptfont = pygame.font.Font('freesansbold.ttf', 12)
 
 # Colors used in displays
 white = (255, 255, 255)
@@ -53,6 +55,7 @@ chainnum = 1
 # Main loop that determines what screen is displayed
 def main_loop():
     mainloop = True  # This will remain true up until pygame is quit
+    readData()
     while mainloop:
         getpos()  # Assists in creating boundaries for displays
         if screenselect == 1:  # Default welcome page
@@ -234,9 +237,44 @@ def surveyinteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:
             if flag is False:
                 global screenselect
+                global saved
+                saved = False
                 screenselect = 3
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:
             screenselect = 1
+
+
+def getname():
+    suffix = ""
+    if hnum == cnum * 2:
+        suffix = "ene"
+    elif hnum == (cnum * 2) + 2:
+        suffix = "ane"
+
+    prefix = ""
+    if cnum == 1:
+        prefix = "Meth"
+    elif cnum == 2:
+        prefix = "Eth"
+    elif cnum == 3:
+        prefix = "Prop"
+    elif cnum == 4:
+        prefix = "But"
+    elif cnum == 5:
+        prefix = "Pent"
+    elif cnum == 6:
+        prefix = "Hex"
+
+    if suffix == "" or prefix == "":
+        suffix = ""
+        prefix = ""
+    strname = prefix + suffix
+
+    name = titlefont.render(strname, True, black)
+
+    name_rect = name.get_rect()
+
+    screen.blit(name, (screen_width / 2 - (name_rect[2] / 2), 30))
 
 
 def displayui():
@@ -246,16 +284,23 @@ def displayui():
         selected = "last"
     elif x >= 655 and y >= 30 and x <= 740 and y <= 70:
         selected = "home"
-    elif x >= 330 and y >= 500 and x <= 345 and y <= 525:
-        selected = "lastchain"
-    elif x >= 450 and y >= 500 and x <= 465 and y <= 525:
+    elif x >= 280 and y >= 500 and x <= 295 and y <= 525:
         selected = "nextchain"
+    elif x >= 160 and y >= 500 and x <= 175 and y <= 525:
+        selected = "lastchain"
+    elif x >= 50 and y >= 500 and x <= 110 and y <= 525:
+        selected = "save"
 
     screen.fill(pgray)
     pygame.draw.rect(screen, white,
-                     ((screen_width / 2 - 450 / 2), 100, 450, 400))
+                     ((screen_width / 3.5 - 450 / 2), 100, 450, 400))
     main()
-    title = titlefont.render('Display Page', True, black)
+    getname()
+    global saved
+    if selected == "save" or saved == True:
+        saveText = surveyfont.render('Save', True, black, green)
+    else:
+        saveText = surveyfont.render('Save', True, black, lgray)
     if selected == "home":
         homepage = nextfont.render('Home', True, white, lgray)
     else:
@@ -265,7 +310,7 @@ def displayui():
     else:
         previouspage = nextfont.render('Last', True, black, gray)
 
-    if hnum == cnum * 2:
+    if hnum == cnum * 2 and cnum > 3:
         if selected == "nextchain":
             nextchain = surveyfont.render('>', True, white, lgray)
         else:
@@ -278,9 +323,10 @@ def displayui():
         nextchain_rect = nextchain.get_rect()
         lastchain_rect = lastchain.get_rect()
         screen.blit(nextchain,
-                    (screen_width / 2 - (nextchain_rect[2] / 2 - 60), 500))
+                    (screen_width / 3.5 - (nextchain_rect[2] / 2 - 60), 500))
         screen.blit(lastchain,
-                    (screen_width / 2 - (lastchain_rect[2] / 2 + 60), 500))
+                    (screen_width / 3.5 - (lastchain_rect[2] / 2 + 60), 500))
+
         chainmax = cnum // 2
         chainmaxstr = str(chainmax)
         chainnumstr = str(chainnum)
@@ -289,18 +335,41 @@ def displayui():
 
         chaincount_rect = chaincount.get_rect()
         screen.blit(chaincount,
-                    (screen_width / 2 - (chaincount_rect[2] / 2), 500))
+                    (screen_width / 3.5 - (chaincount_rect[2] / 2), 500))
 
-    title_rect = title.get_rect()
+    saveTextRect = saveText.get_rect()
     homepage_rect = homepage.get_rect()
     previouspage_rect = previouspage.get_rect()
 
-    screen.blit(title, (screen_width / 2 - (title_rect[2] / 2), 30))
+    screen.blit(saveText, (screen_width / 10 - (saveTextRect[2] / 2), 500))
     screen.blit(
         homepage,
         (screen_width - (screen_width / 8) - (homepage_rect[2] / 2), 30))
     screen.blit(previouspage,
                 (screen_width / 8 - (previouspage_rect[2] / 2), 30))
+
+    # Printing of information about the hydrocarbon
+    molformula2 = str(strcnum + "      " + strhnum)
+    formula1_text = infofont.render("Molecular formula: C" + "  " + "H", True,
+                                    black)
+    formula2_text = subscriptfont.render(molformula2, True, black)
+    mr = (cnum * 12) + hnum
+    strmr = str(mr)
+    mr_text = infofont.render("Mr: " + strmr, True, black)
+
+    if hnum == cnum * 2:
+        Type_text = infofont.render("The hydrocarbon is an alkene", True,
+                                    black)
+    elif hnum == (cnum * 2) + 2:
+        Type_text = infofont.render("The hydrocarbon is an alkane", True,
+                                    black)
+    elif hnum == cnum:
+        Type_text = infofont.render("The hydrocarbon is cyclic", True, black)
+
+    screen.blit(Type_text, (screen_width / 2 + 60, 120))
+    screen.blit(formula1_text, (screen_width / 2 + 60, 150))
+    screen.blit(formula2_text, (screen_width / 2 + 245, 157))
+    screen.blit(mr_text, (screen_width / 2 + 60, 180))
 
 
 def displayinteractions():
@@ -313,13 +382,49 @@ def displayinteractions():
             screenselect = 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:
             screenselect = 2
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 330 and y >= 500 and x <= 345 and y <= 525:
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 160 and y >= 500 and x <= 175 and y <= 525:
             global chainnum
             if chainnum > 1:
                 chainnum = chainnum - 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 450 and y >= 500 and x <= 465 and y <= 525:
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 280 and y >= 500 and x <= 295 and y <= 525:
             if chainnum < cnum // 2:
                 chainnum = chainnum + 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 50 and y >= 500 and x <= 110 and y <= 525:
+            global saved
+            if saved == False:
+                saved = True
+                saveData()
+            else:
+                removeData()
+
+
+def readData():
+    global datalist
+    datalist = []
+    try:
+        with open("savedData.txt", mode="r", encoding="utf-8") as my_file:
+            for line in my_file:
+                datalist.append(line.rstrip("\n"))
+    except:
+        print("No data found")
+    finally:
+        print("Data gathered successfully")
+
+
+def removeData():
+    global datalist
+    datalist.pop
+    with open("savedData.txt", mode="w", encoding="utf-8") as my_file:
+        for data in datalist:
+            my_file.write(data+"\n")
+
+
+def saveData():
+    global datalist
+    datalist.append(strcnum + " " + strhnum)
+    with open("savedData.txt", mode="w", encoding="utf-8") as my_file:
+        for data in datalist:
+            my_file.write(data+"\n")
 
 
 def getpos():
@@ -382,6 +487,7 @@ def definechain():
     elif hnum == cnum and cnum >= 6:
         cyclic()
 
+
 def alkene():
     array[startposy][(2 * chainnum) + 1] = "="
     array[startposy - 2][(2 * chainnum) + 2] = " "
@@ -393,8 +499,7 @@ def alkene():
 def printchain():
     offsety = 0
     for row in array:
-        offsetx = -2
-        offsetx = offsetx * cnum
+        offsetx = -2 * cnum
         for elem in row:
             if elem == "|":
                 offsetx = offsetx + 5
@@ -409,7 +514,7 @@ def printchain():
                 offsetx = offsetx + 2
         offsety = offsety + 30
 
-    spx = screen_width // 2 - offsetx // 2
+    spx = screen_width // 3.5 - offsetx // 2
     spy = screen_height // 2 - offsety // 2
 
     offsety = 0
@@ -421,8 +526,9 @@ def printchain():
             if elem == "—":
                 offsety = offsety - 2
                 offsetx = offsetx - 2
-            variablefontsize = 25
             character = surveyfont.render(elem, True, black)
+            if elem == "=":
+                character = surveyfont.render(elem, True, black, blue)
             screen.blit(character, (spx + offsetx, spy + offsety))
             offsetx = offsetx + 30
             if elem == "|":
