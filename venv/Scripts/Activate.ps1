@@ -27,7 +27,7 @@ function global:deactivate ([switch]$NonDestructive) {
 
 deactivate -nondestructive
 
-$env:VIRTUAL_ENV="C:\Users\joema\Desktop\Code\Python\Hydrocarbon-Simultor\venv"
+$env:VIRTUAL_ENV="C:\Users\joema\Desktop\Code\Python\Hydrocarbon Generator2\venv"
 
 if (! $env:VIRTUAL_ENV_DISABLE_PROMPT) {
     # Set the prompt to include the env name
