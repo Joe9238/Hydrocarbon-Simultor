@@ -6,3 +6,6 @@ This is the simplistic Ascii-based version of the project, used in the formation
 
 Main.py:
 This is the version which is intended for use
+
+savedData.txt:
+Contains a list of saved hydrocarbons
