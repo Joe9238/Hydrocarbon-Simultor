@@ -1,6 +1,6 @@
 # Import pygame
+from math import cos, sin, pi
 import pygame
-from pygame.locals import *
 
 # Declare necessary global variables
 global carbonNumber
@@ -129,6 +129,8 @@ def homeinteractions():
             quit()
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 340 and y >= 300 and x <= 460 and y <= 350:  # Selected start button
             global screenID
+            global cyclic
+            cyclic = False
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 345 and y >= 360 and x <= 455 and y <= 410: # Selected saved button
             screenID = 4 # Move over to the saved page
@@ -151,6 +153,7 @@ def savedUI():
     pygame.draw.line(screen, black, (755, 70), (755, 570))
     pygame.draw.line(screen, black, (165, 70), (165, 570))
     pygame.draw.line(screen, black, (310, 70), (310, 570))
+    pygame.draw.line(screen, black, (455, 70), (455, 570))
     pygame.draw.line(screen, black, (43, 70), (43, 570))
     for i in range(8):
         pygame.draw.line(screen, black, (0, 150 + (i * 60)), (screenWidth, 150 + (i * 60)))
@@ -162,17 +165,20 @@ def savedUI():
         homeText = nextFont.render('Home', True, black)
 
     carbonsText = surveyFont.render('Carbons', True, black)
+    cyclicValueText = surveyFont.render('Cyclic', True, black)
     limitText = surveyFont.render('You can save a maximum of 8 hydrocarbons.', True, black)
     hydrogensText = surveyFont.render('Hydrogens', True, black)
 
     # Determine the length of each text block for positioning
     homeTextRect = homeText.get_rect()
+    cyclicValueTextRect = cyclicValueText.get_rect()
     carbonsTextRect = carbonsText.get_rect()
     hydrogensTextRect = hydrogensText.get_rect()
     limitTextRect = limitText.get_rect()
 
     # Place the text on the screen
     screen.blit(homeText, (screenWidth - (screenWidth / 8) - (homeTextRect[2] / 2), 30))
+    screen.blit(cyclicValueText, ((screenWidth / 8) - (cyclicValueTextRect[2] / 2) + 280, 70))
     screen.blit(carbonsText, ((screenWidth / 8) - (carbonsTextRect[2] / 2), 70))
     screen.blit(hydrogensText, ((screenWidth / 8) - (hydrogensTextRect[2] / 2) + 140, 70))
     screen.blit(limitText, ((screenWidth / 2) - (limitTextRect[2] / 2), 573))
@@ -181,8 +187,13 @@ def savedUI():
     global savedList
     for a in range(len(savedList)):
         dataList = savedList[a].split()
-        for i in range(2):
-            dataText = nextFont.render(dataList[i], True, black)
+        for i in range(3):
+            data = dataList[i]
+            if data == "True":
+                data = "Yes"
+            elif data == "False":
+                data = "No"
+            dataText = nextFont.render(data, True, black)
             dataTextRect = dataText.get_rect()
             screen.blit(dataText, ((screenWidth / 8) - (dataTextRect[2] / 2) + (i * 140), 100 + (a * 60)))
 
@@ -226,8 +237,20 @@ def goToSave():
         global hydrogenNumber
         global carbonNumberStr
         global hydrogenNumberStr
+        global cyclic
+        global skeletal
+        global saved
+        saved = True
+        skeletal = False
         carbonNumber = int(dataList[0])
         hydrogenNumber = int(dataList[1])
+        cyclicStr = str(dataList[2])
+        if cyclicStr == "True":
+            cyclic = True
+        elif cyclicStr == "False":
+            cyclic = False
+        else:
+            cyclic = False
         carbonNumberStr = str(carbonNumber)
         hydrogenNumberStr = str(hydrogenNumber)
 
@@ -240,17 +263,19 @@ def goToSave():
 
 # Check if the hydrocarbon is valid
 def hydrocarbonCheck():
-    # If statements go through the list of correct inputs
+    # If statements go through the list of inputs
     global cannotContinue
-    cannotContinue = False
-    if hydrogenNumber == (carbonNumber * 2) + 2:
+    global cyclic
+    cannotContinue = True
+    if cyclic == False:
+        if hydrogenNumber == (carbonNumber * 2) + 2:
+            cannotContinue = False
+        if hydrogenNumber == carbonNumber * 2:
+            cannotContinue = False
+        if hydrogenNumber == carbonNumber and carbonNumber >= 6:
+            cannotContinue = False
+    if cyclic == True and carbonNumber > 2:
         cannotContinue = False
-    elif hydrogenNumber == carbonNumber * 2:
-        cannotContinue = False
-    elif hydrogenNumber == carbonNumber and carbonNumber >= 6:
-        cannotContinue = False
-    else:
-        cannotContinue = True  # If the hydrocarbon is invalid, cannotContinue is set to true
 
 
 def surveyUI():
@@ -260,18 +285,20 @@ def surveyUI():
 
     # Determine what the cursor is hovering over
     selected = ""
-    if x >= 500 and y >= 125 and x <= 515 and y <= 150:
+    if x >= 420 and y >= 125 and x <= 435 and y <= 150:
         selected = "upcnum"
-    elif x >= 500 and y >= 155 and x <= 515 and y <= 180:
+    elif x >= 420 and y >= 155 and x <= 435 and y <= 180:
         selected = "downcnum"
-    elif x >= 500 and y >= 205 and x <= 515 and y <= 230:
+    elif x >= 420 and y >= 205 and x <= 435 and y <= 230:
         selected = "uphnum"
-    elif x >= 500 and y >= 235 and x <= 515 and y <= 260:
+    elif x >= 420 and y >= 235 and x <= 435 and y <= 260:
         selected = "downhnum"
     elif x >= 60 and y >= 30 and x <= 135 and y <= 70:
         selected = "last"
     elif x >= 655 and y >= 30 and x <= 740 and y <= 70:
         selected = "next"
+    elif x >= 130 and y >= 280 and x <= 170 and y <= 305:
+        selected = "cyclic"
 
     # Set out colours/sections on screen
     screen.fill(veryLightGray)
@@ -283,10 +310,17 @@ def surveyUI():
     hydrogenNumberStr = str(hydrogenNumber)
 
     # Determine text appearance
-    if cannotContinue is False:
-        hydrogenNumberText = surveyFont.render('Number of hydrogen atoms: ' + hydrogenNumberStr, True, black)
+    global cyclic
+    if cyclic == True:
+        if selected == "cyclic":
+            cyclicChoiceText = surveyFont.render('Yes', True, white, lightGreen)
+        else:
+            cyclicChoiceText = surveyFont.render('Yes', True, black, green)
     else:
-        hydrogenNumberText = surveyFont.render('Number of hydrogen atoms: ' + hydrogenNumberStr, True, black, red)
+        if selected == "cyclic":
+            cyclicChoiceText = surveyFont.render('No', True, white, lightRed)
+        else:
+            cyclicChoiceText = surveyFont.render('No', True, black, red)
 
     if selected == "upcnum":
         increaseCarbonsText = surveyFont.render('^', True, white, lightGray)
@@ -320,6 +354,8 @@ def surveyUI():
 
     carbonNumberText = surveyFont.render('Number of carbon atoms: ' + carbonNumberStr, True, black)
     titleText = titleFont.render('Survey Page', True, black)
+    hydrogenNumberText = surveyFont.render('Number of hydrogen atoms: ' + hydrogenNumberStr, True, black)
+    cyclicText = surveyFont.render("Cyclic:", True, black)
 
     # Determine the length of each text block for positioning
     titleTextRect = titleText.get_rect()
@@ -327,15 +363,17 @@ def surveyUI():
     lastTextRect = lastText.get_rect()
 
     # Place the text on the screen
+    screen.blit(cyclicText, (40, 280))
+    screen.blit(cyclicChoiceText, (130, 280))
     screen.blit(titleText, (screenWidth / 2 - (titleTextRect[2] / 2), 30))
     screen.blit(nextText, (screenWidth - (screenWidth / 8) - (nextTextRect[2] / 2), 30))
     screen.blit(lastText, (screenWidth / 8 - (lastTextRect[2] / 2), 30))
     screen.blit(carbonNumberText, (40, 140))
     screen.blit(hydrogenNumberText, (40, 220))
-    screen.blit(increaseCarbonsText, (500, 125))
-    screen.blit(decreaseCarbonsText, (500, 155))
-    screen.blit(increaseHydrogensText, (500, 205))
-    screen.blit(decreaseHydrogensText, (500, 235))
+    screen.blit(increaseCarbonsText, (420, 125))
+    screen.blit(decreaseCarbonsText, (420, 155))
+    screen.blit(increaseHydrogensText, (420, 205))
+    screen.blit(decreaseHydrogensText, (420, 235))
 
 
 def surveyInteractions():
@@ -343,22 +381,22 @@ def surveyInteractions():
         if event.type == pygame.QUIT: # Quit pygame
             pygame.quit()
             quit()
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 500 and y >= 125 and x <= 515 and y <= 150: # Selected increase carbons button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 125 and x <= 435 and y <= 150: # Selected increase carbons button
             global carbonNumber  
             if carbonNumber < 6: # Increase carbons if the number of carbons is less than 6
                 carbonNumber = carbonNumber + 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 500 and y >= 155 and x <= 515 and y <= 180: # Selected decrease carbons button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 155 and x <= 435 and y <= 180: # Selected decrease carbons button
             if carbonNumber > 1: # Decrease carbons if the number of carbons is more than 1
                 carbonNumber = carbonNumber - 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 500 and y >= 205 and x <= 515 and y <= 230: # Selected increase hydrogens button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 205 and x <= 435 and y <= 230: # Selected increase hydrogens button
             global hydrogenNumber
-            if hydrogenNumber < (carbonNumber * 2) + 2: # Increase hydrogens if the number of hydrogens is less than the maximum
+            if hydrogenNumber < 14: # Increase hydrogens if the number of hydrogens is less than the maximum
                 hydrogenNumber = hydrogenNumber + 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 500 and y >= 235 and x <= 515 and y <= 260: # Selected decrease hydrogens button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 235 and x <= 435 and y <= 260: # Selected decrease hydrogens button
             if hydrogenNumber > 4: # Decrease hydrogens if the number of hydrogens is more than 1
                 hydrogenNumber = hydrogenNumber - 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70: # Selected next button
-            if cannotContinue is False: # If able to continue, reset saved variable and go to display page
+            if cannotContinue == False: # If able to continue, reset saved variable and go to display page
                 global screenID
                 global saved
                 global skeletal
@@ -367,6 +405,12 @@ def surveyInteractions():
                 screenID = 3
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70: # Selected last button
             screenID = 1 # Move over to the main menu
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 130 and y >= 280 and x <= 170 and y <= 305: # Selected cyclic button
+            global cyclic
+            if cyclic == False:
+                cyclic = True
+            else:
+                cyclic = False
 
 
 # Generate the name of the hydrocarbon for the title of the display page
@@ -393,6 +437,16 @@ def generateName():
     elif carbonNumber == 6:
         prefix = "Hex"
 
+    global cyclic
+    if cyclic == True:
+        if carbonNumber == 3:
+            prefix = "Cycloprop"
+        elif carbonNumber == 4:
+            prefix = "Cyclobut"
+        elif carbonNumber == 5:
+            prefix = "Cyclopent"
+        elif carbonNumber == 6:
+            prefix = "Cyclohex"
     # If the name is incomplete, do not print any name
     if suffix == "" or prefix == "":
         suffix = ""
@@ -421,7 +475,7 @@ def displayUI():
         selected = "lastStereoisomer"
     elif x >= 50 and y >= 500 and x <= 110 and y <= 525:
         selected = "save"
-    elif x >= 30 and y >= 530 and x <= 130 and y <= 555:
+    elif x >= 20 and y >= 530 and x <= 140 and y <= 555:
         selected = "skeletal"
 
     # Set out colours/sections on screen
@@ -431,12 +485,13 @@ def displayUI():
     # Determine if hydrocarbon has been saved already
     global saved
     global savedList
+    global cyclic
     for i in range(len(savedList)):
         variables = savedList[i].split()
         carbonNumberSaved = int(variables[0])
         hydrogenNumberSaved = int(variables[1])
-
-        if carbonNumber == carbonNumberSaved and hydrogenNumber == hydrogenNumberSaved:
+        cyclicSaved = bool(variables[2])
+        if carbonNumber == carbonNumberSaved and hydrogenNumber == hydrogenNumberSaved and cyclic == cyclicSaved:
             saved = True
 
     # Determine text appearance
@@ -453,7 +508,7 @@ def displayUI():
     elif hydrogenNumber == (carbonNumber * 2) + 2:
         hydrocarbonTypeText = informationFont.render("The hydrocarbon is an alkane", True,
                                            black)
-    elif hydrogenNumber == carbonNumber:
+    elif cyclic == True:
         hydrocarbonTypeText = informationFont.render("The hydrocarbon is cyclic", True, black)
 
     if selected == "home":
@@ -466,17 +521,6 @@ def displayUI():
     else:
         lastText = nextFont.render('Last', True, black, gray)
 
-    if skeletal == False:
-        if selected == "skeletal":
-            skeletalText = surveyFont.render('Skeletal', True, white, lightGray)
-        else:
-            skeletalText = surveyFont.render('Skeletal', True, black, gray)
-    else:
-        if selected == "skeletal":
-            skeletalText = surveyFont.render('Displayed', True, white, lightGray)
-        else:
-            skeletalText = surveyFont.render('Displayed', True, black, gray)
-
     molecularFormula = str(carbonNumberStr + "      " + hydrogenNumberStr)
     molucularFormulaText = informationFont.render("Molecular formula: C" + "  " + "H", True, black)
     molecularFormulaSubscriptText = subscriptFont.render(molecularFormula, True, black)
@@ -486,13 +530,11 @@ def displayUI():
 
     # Determine the length of each text block for positioning
     saveTextRect = saveText.get_rect()
-    skeletalTextRect = skeletalText.get_rect()
     homeTextRect = homeText.get_rect()
     lastTextRect = lastText.get_rect()
 
     # Place the text on the screen
     screen.blit(saveText, (screenWidth / 10 - (saveTextRect[2] / 2), 500))
-    screen.blit(skeletalText, (screenWidth / 10 - (skeletalTextRect[2] / 2), 530))
     screen.blit(homeText, (screenWidth - (screenWidth / 8) - (homeTextRect[2] / 2), 30))
     screen.blit(lastText, (screenWidth / 8 - (lastTextRect[2] / 2), 30))
     screen.blit(hydrocarbonTypeText, (screenWidth / 2 + 60, 120))
@@ -525,6 +567,21 @@ def displayUI():
         chainCountTextRect = chainCount.get_rect()
         screen.blit(chainCount, (screenWidth / 3.5 - (chainCountTextRect[2] / 2), 500))
 
+    # Create and place the skeletal button on the screen if needed
+    if cyclic == False:
+        if skeletal == False:
+            if selected == "skeletal":
+                skeletalText = surveyFont.render('Skeletal', True, white, lightGray)
+            else:
+                skeletalText = surveyFont.render('Skeletal', True, black, gray)
+        else:
+            if selected == "skeletal":
+                skeletalText = surveyFont.render('Displayed', True, white, lightGray)
+            else:
+                skeletalText = surveyFont.render('Displayed', True, black, gray)
+        skeletalTextRect = skeletalText.get_rect()
+        screen.blit(skeletalText, (screenWidth / 10 - (skeletalTextRect[2] / 2), 530))
+
     main()  # Function for drawing the hydrocarbon
     generateName()  # Function for printing the hydrocarbon name
 
@@ -546,7 +603,7 @@ def displayInteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 280 and y >= 500 and x <= 295 and y <= 525: # Selected increase stereoisomer number button
             if stereoisomerNumber < carbonNumber // 2: # Increase stereoisomer number if the stereoisomer number is below maximum
                 stereoisomerNumber = stereoisomerNumber + 1
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 30 and y >= 530 and x <= 130 and y <= 555:  # Selected skeletal button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 20 and y >= 530 and x <= 140 and y <= 555:  # Selected skeletal button
             global skeletal
             if skeletal == False:
                 skeletal = True
@@ -612,7 +669,9 @@ def removeData():
 # Saves data to text file
 def saveData():
     global savedList
-    dataToAdd = carbonNumberStr + " " + hydrogenNumberStr
+    global cyclic
+    cyclicStr = str(cyclic)
+    dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr
     doNotAdd = False
     for i in range(len(savedList)): # Checks if data already exists
         if savedList[i] == dataToAdd or len(savedList) == 8: # Limit to saves is 8
@@ -683,14 +742,15 @@ def createHydrocarbon():
 
 # Defines type of hydrocarbon and calls relevant functions
 def defineHydrocarbonType():
-    if skeletal == True:
+    global cyclic
+    if cyclic == True:
+        printCyclic()
+    elif skeletal == True:
         if hydrogenNumber == (carbonNumber * 2) + 2:
             printSkeletal()
         elif hydrogenNumber == carbonNumber * 2:
             printSkeletal()
             alkeneSkeletal()
-        elif hydrogenNumber == carbonNumber and carbonNumber >= 6:
-            cyclicSkeletal()
     elif hydrogenNumber == (carbonNumber * 2) + 2:
         createHydrocarbon()
         printHydrocarbon()
@@ -698,8 +758,6 @@ def defineHydrocarbonType():
         createHydrocarbon()
         alkene()
         printHydrocarbon()
-    elif hydrogenNumber == carbonNumber and carbonNumber >= 6:
-        cyclic()
 
 
 # Alters array for alkenes
@@ -784,14 +842,18 @@ def printSkeletal():
         offsetX = offsetX + 75
 
 
-
-# Feature not implemented yet
-def cyclic():
-    pass
-
-
-def cyclicSkeletal():
-    pass
+def printCyclic():
+    startingPointX = screenWidth // 3.5
+    startingPointY = screenHeight // 2
+    angleIncrement = 2*pi / carbonNumber
+    angle = 0
+    for point in range(carbonNumber):
+        xPosition1 = (90 * cos(angle)) + startingPointX
+        yPosition1 = (90 * sin(angle)) + startingPointY
+        xPosition2 = (90 * cos(angle + angleIncrement)) + startingPointX
+        yPosition2 = (90 * sin(angle + angleIncrement)) + startingPointY
+        pygame.draw.line(screen, black, (xPosition1, yPosition1), (xPosition2, yPosition2), 2)
+        angle = angle + angleIncrement
 
 
 def alkeneSkeletal():
