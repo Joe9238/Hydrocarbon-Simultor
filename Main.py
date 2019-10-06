@@ -41,10 +41,6 @@ yellow = (255, 255, 0)
 clock = pygame.time.Clock()
 FPS = 30
 
-# Initial value for the screen number
-global screenID
-screenID = 1
-
 # Initial value for the chain number (used where there is more than one hydrocarbon possible)
 global stereoisomerNumber
 stereoisomerNumber = 1
@@ -54,6 +50,10 @@ stereoisomerNumber = 1
 def mainLoop():
     doLoop = True  # This will remain true up until pygame is quit
     readData()
+
+    # Initial value for the screen number
+    global screenID
+    screenID = 1
     while doLoop:
         getCoordinates()  # Assists in creating boundaries for displays
         if screenID == 1:  # Default welcome page
@@ -232,6 +232,7 @@ def goToSave():
         hydrogenNumberStr = str(hydrogenNumber)
 
         # Go to display page
+        global screenID
         screenID = 3
     except:
         print("No data found")
@@ -405,8 +406,6 @@ def generateName():
 def displayUI():
     # Call other functions that need to be run on this page
     displayInteractions()
-    main()
-    generateName()
 
     # Determine what the cursor is hovering over
     selected = ""
@@ -424,6 +423,8 @@ def displayUI():
     # Set out colours/sections on screen
     screen.fill(veryLightGray)
     pygame.draw.rect(screen, white, ((screenWidth / 3.5 - 450 / 2), 100, 450, 400))
+    main() # Function for drawing the hydrocarbon
+    generateName() # Function for printing the hydrocarbon name
 
     # Determine if hydrocarbon has been saved already
     global saved
@@ -715,7 +716,9 @@ def printHydrocarbon():
             elementText = surveyFont.render(element, True, black)
             if element == "=":
                 elementText = surveyFont.render(element, True, black, blue)
-            screen.blit(elementText, (startingPointX + offsetX, startingPointY + offsetY))
+            screen.blit(elementText, ((startingPointX + offsetX), (startingPointY + offsetY)))
+            if element == "C":
+                print(element)
             offsetX = offsetX + 30
             if element == "|":
                 offsetX = offsetX - 5
