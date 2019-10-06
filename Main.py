@@ -361,7 +361,9 @@ def surveyInteractions():
             if cannotContinue is False: # If able to continue, reset saved variable and go to display page
                 global screenID
                 global saved
+                global skeletal
                 saved = False
+                skeletal = False
                 screenID = 3
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70: # Selected last button
             screenID = 1 # Move over to the main menu
@@ -419,12 +421,12 @@ def displayUI():
         selected = "lastStereoisomer"
     elif x >= 50 and y >= 500 and x <= 110 and y <= 525:
         selected = "save"
+    elif x >= 30 and y >= 530 and x <= 130 and y <= 555:
+        selected = "skeletal"
 
     # Set out colours/sections on screen
     screen.fill(veryLightGray)
     pygame.draw.rect(screen, white, ((screenWidth / 3.5 - 450 / 2), 100, 450, 400))
-    main() # Function for drawing the hydrocarbon
-    generateName() # Function for printing the hydrocarbon name
 
     # Determine if hydrocarbon has been saved already
     global saved
@@ -464,6 +466,17 @@ def displayUI():
     else:
         lastText = nextFont.render('Last', True, black, gray)
 
+    if skeletal == False:
+        if selected == "skeletal":
+            skeletalText = surveyFont.render('Skeletal', True, white, lightGray)
+        else:
+            skeletalText = surveyFont.render('Skeletal', True, black, gray)
+    else:
+        if selected == "skeletal":
+            skeletalText = surveyFont.render('Displayed', True, white, lightGray)
+        else:
+            skeletalText = surveyFont.render('Displayed', True, black, gray)
+
     molecularFormula = str(carbonNumberStr + "      " + hydrogenNumberStr)
     molucularFormulaText = informationFont.render("Molecular formula: C" + "  " + "H", True, black)
     molecularFormulaSubscriptText = subscriptFont.render(molecularFormula, True, black)
@@ -473,11 +486,13 @@ def displayUI():
 
     # Determine the length of each text block for positioning
     saveTextRect = saveText.get_rect()
+    skeletalTextRect = skeletalText.get_rect()
     homeTextRect = homeText.get_rect()
     lastTextRect = lastText.get_rect()
 
     # Place the text on the screen
     screen.blit(saveText, (screenWidth / 10 - (saveTextRect[2] / 2), 500))
+    screen.blit(skeletalText, (screenWidth / 10 - (skeletalTextRect[2] / 2), 530))
     screen.blit(homeText, (screenWidth - (screenWidth / 8) - (homeTextRect[2] / 2), 30))
     screen.blit(lastText, (screenWidth / 8 - (lastTextRect[2] / 2), 30))
     screen.blit(hydrocarbonTypeText, (screenWidth / 2 + 60, 120))
@@ -510,6 +525,9 @@ def displayUI():
         chainCountTextRect = chainCount.get_rect()
         screen.blit(chainCount, (screenWidth / 3.5 - (chainCountTextRect[2] / 2), 500))
 
+    main()  # Function for drawing the hydrocarbon
+    generateName()  # Function for printing the hydrocarbon name
+
 
 def displayInteractions():
     for event in pygame.event.get():
@@ -528,6 +546,12 @@ def displayInteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 280 and y >= 500 and x <= 295 and y <= 525: # Selected increase stereoisomer number button
             if stereoisomerNumber < carbonNumber // 2: # Increase stereoisomer number if the stereoisomer number is below maximum
                 stereoisomerNumber = stereoisomerNumber + 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 30 and y >= 530 and x <= 130 and y <= 555:  # Selected skeletal button
+            global skeletal
+            if skeletal == False:
+                skeletal = True
+            else:
+                skeletal = False
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 50 and y >= 500 and x <= 110 and y <= 525:  # Selected save button
             global saved
             if saved == False:  # If not already saved, save it
@@ -659,7 +683,15 @@ def createHydrocarbon():
 
 # Defines type of hydrocarbon and calls relevant functions
 def defineHydrocarbonType():
-    if hydrogenNumber == (carbonNumber * 2) + 2:
+    if skeletal == True:
+        if hydrogenNumber == (carbonNumber * 2) + 2:
+            printSkeletal()
+        elif hydrogenNumber == carbonNumber * 2:
+            printSkeletal()
+            alkeneSkeletal()
+        elif hydrogenNumber == carbonNumber and carbonNumber >= 6:
+            cyclicSkeletal()
+    elif hydrogenNumber == (carbonNumber * 2) + 2:
         createHydrocarbon()
         printHydrocarbon()
     elif hydrogenNumber == carbonNumber * 2:
@@ -714,11 +746,7 @@ def printHydrocarbon():
                 offsetY = offsetY - 2
                 offsetX = offsetX - 2
             elementText = surveyFont.render(element, True, black)
-            if element == "=":
-                elementText = surveyFont.render(element, True, black, blue)
             screen.blit(elementText, ((startingPointX + offsetX), (startingPointY + offsetY)))
-            if element == "C":
-                print(element)
             offsetX = offsetX + 30
             if element == "|":
                 offsetX = offsetX - 5
@@ -728,9 +756,67 @@ def printHydrocarbon():
         offsetY = offsetY + 30
 
 
+def printSkeletal():
+    # Determine length of hydrocarbon
+    offsetX = 0
+    for i in range(carbonNumber - 1):
+        offsetX = offsetX + 75
+
+    # Base dimensions of bonds
+    length = 75
+    height = 75
+    # For alternating line direction
+    drawUp = True
+
+    # Calculate the starting points
+    startingPointX = screenWidth // 3.5 - offsetX // 2
+    startingPointY = (screenHeight // 2) - (height // 2)
+
+    # Print the hydrocarbon
+    offsetX = 0
+    for i in range(carbonNumber - 1):
+        if drawUp == True:
+            pygame.draw.line(screen, black, (startingPointX + offsetX, startingPointY), (startingPointX + length + offsetX, startingPointY + height), 2)
+            drawUp = False
+        else:
+            pygame.draw.line(screen, black, (startingPointX + offsetX, startingPointY + height), (startingPointX + length + offsetX, startingPointY), 2)
+            drawUp = True
+        offsetX = offsetX + 75
+
+
+
 # Feature not implemented yet
 def cyclic():
     pass
+
+
+def cyclicSkeletal():
+    pass
+
+
+def alkeneSkeletal():
+    # Determine length of hydrocarbon
+    offsetX = 0
+    for i in range(carbonNumber - 1):
+        offsetX = offsetX + 75
+
+    # Base dimensions of bonds
+    length = 75
+    height = 75
+
+    # Calculate the starting points
+    startingPointX = screenWidth // 3.5 - offsetX // 2
+    startingPointY = (screenHeight // 2) - (height // 2)
+
+    # Print the hydrocarbon
+    offsetX = 75 * (stereoisomerNumber - 1)
+    for i in range(carbonNumber - 1):
+        if stereoisomerNumber % 2 != 0:
+            pygame.draw.line(screen, black, (startingPointX + offsetX + 5, startingPointY - 5),
+                             (startingPointX + length + offsetX + 5, startingPointY + height - 5), 2)
+        else:
+            pygame.draw.line(screen, black, (startingPointX + offsetX - 5, startingPointY + height - 5),
+                             (startingPointX + length + offsetX - 5, startingPointY - 5), 2)
 
 
 mainLoop()
