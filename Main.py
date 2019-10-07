@@ -272,10 +272,14 @@ def hydrocarbonCheck():
             cannotContinue = False
         if hydrogenNumber == carbonNumber * 2:
             cannotContinue = False
-        if hydrogenNumber == carbonNumber and carbonNumber >= 6:
-            cannotContinue = False
-    if cyclic == True and carbonNumber > 2:
-        cannotContinue = False
+    else:
+        if carbonNumber > 2:
+            if hydrogenNumber == carbonNumber and carbonNumber >= 6:
+                cannotContinue = False
+            if hydrogenNumber == (carbonNumber * 2) + 2:
+                cannotContinue = False
+            if hydrogenNumber == carbonNumber * 2:
+                cannotContinue = False
 
 
 def surveyUI():
@@ -417,7 +421,7 @@ def surveyInteractions():
 def generateName():
     # suffix is based upon carbon : hydrogen ratio
     suffix = ""
-    if hydrogenNumber == carbonNumber * 2:
+    if hydrogenNumber == carbonNumber * 2 or hydrogenNumber == carbonNumber:
         suffix = "ene"
     elif hydrogenNumber == (carbonNumber * 2) + 2:
         suffix = "ane"
@@ -446,7 +450,10 @@ def generateName():
         elif carbonNumber == 5:
             prefix = "Cyclopent"
         elif carbonNumber == 6:
-            prefix = "Cyclohex"
+            if hydrogenNumber == 6:
+                prefix = "Benz"
+            else:
+                prefix = "Cyclohex"
     # If the name is incomplete, do not print any name
     if suffix == "" or prefix == "":
         suffix = ""
@@ -543,7 +550,7 @@ def displayUI():
     screen.blit(molecularMassText, (screenWidth / 2 + 60, 180))
 
     # Create and place the stereoisomer scrolling buttons on the screen if needed
-    if hydrogenNumber == carbonNumber * 2 and carbonNumber > 3:
+    if hydrogenNumber == carbonNumber * 2 and carbonNumber > 3 and cyclic == False:
         if selected == "nextStereoisomer":
             nextStereoisomerText = surveyFont.render('>', True, white, lightGray)
         else:
@@ -853,6 +860,15 @@ def printCyclic():
         xPosition2 = (90 * cos(angle + angleIncrement)) + startingPointX
         yPosition2 = (90 * sin(angle + angleIncrement)) + startingPointY
         pygame.draw.line(screen, black, (xPosition1, yPosition1), (xPosition2, yPosition2), 2)
+        if hydrogenNumber == carbonNumber * 2:
+            if point == 1:
+                xPosition1 = (80 * cos(angle)) + startingPointX
+                yPosition1 = (80 * sin(angle)) + startingPointY
+                xPosition2 = (80 * cos(angle + angleIncrement)) + startingPointX
+                yPosition2 = (80 * sin(angle + angleIncrement)) + startingPointY
+                pygame.draw.line(screen, black, (xPosition1, yPosition1), (xPosition2, yPosition2), 2)
+        elif hydrogenNumber == carbonNumber:
+            pygame.draw.circle(screen, black, (int(startingPointX), int(startingPointY)), 70, 2)
         angle = angle + angleIncrement
 
 
