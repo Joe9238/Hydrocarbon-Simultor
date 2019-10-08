@@ -5,8 +5,12 @@ import pygame
 # Declare necessary global variables
 global carbonNumber
 global hydrogenNumber
+global carbonNumberBranched
+global hydrogenNumberBranched
 carbonNumber = 1
 hydrogenNumber = 4
+carbonNumberBranched = 1
+hydrogenNumberBranched = 3
 
 pygame.init()
 
@@ -64,6 +68,8 @@ def mainLoop():
             displayUI()
         elif screenID == 4:
             savedUI()
+        elif screenID == 5:
+            branchedUI()
 
         pygame.display.update()  # Updates the on-screen display
         clock.tick(FPS)
@@ -73,7 +79,7 @@ def mainLoop():
 # Display data for the home page
 def homeUI():
     # Call other functions that need to be run on this page
-    homeinteractions()
+    homeInteractions()
 
     # Determine what the cursor is hovering over
     selected = ""
@@ -119,7 +125,7 @@ def homeUI():
 
 
 # Possible events for the main menu
-def homeinteractions():
+def homeInteractions():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # Quit pygame
             pygame.quit()
@@ -130,6 +136,8 @@ def homeinteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 340 and y >= 300 and x <= 460 and y <= 350:  # Selected start button
             global screenID
             global cyclic
+            global branched
+            branched = False
             cyclic = False
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 345 and y >= 360 and x <= 455 and y <= 410: # Selected saved button
@@ -224,6 +232,112 @@ def savedInteractions():
             goToSave() # Go to the display page with saved settings
 
 
+def branchedUI():
+    # Call other functions that need to be run on this page
+    branchedInteractions()
+    hydrocarbonCheck()
+
+    # Determine what the cursor is hovering over
+    selected = ""
+    if x >= 60 and y >= 30 and x <= 135 and y <= 70:
+        selected = "last"
+    elif x >= 655 and y >= 30 and x <= 740 and y <= 70:
+        selected = "next"
+    elif x >= 420 and y >= 125 and x <= 435 and y <= 150:
+        selected = "upcnum"
+    elif x >= 420 and y >= 155 and x <= 435 and y <= 180:
+        selected = "downcnum"
+    elif x >= 420 and y >= 205 and x <= 435 and y <= 230:
+        selected = "uphnum"
+    elif x >= 420 and y >= 235 and x <= 435 and y <= 260:
+        selected = "downhnum"
+
+    # Set out colours/sections on screen
+    screen.fill(veryLightGray)
+
+    # Get needed variables for hydrocarbon-variable-related texts
+    global carbonNumberBranched
+    global hydrogenNumberBranched
+    global cannotContinue
+    carbonNumberBranchedStr = str(carbonNumberBranched)
+    hydrogenNumberBranchedStr = str(hydrogenNumberBranched)
+
+    # Determine text appearance
+    if selected == "next" and cannotContinue is False:
+        nextText = nextFont.render('Next', True, white, lightGray)
+    else:
+        nextText = nextFont.render('Next', True, black, gray)
+
+    if selected == "last":
+        lastText = nextFont.render('Last', True, white, lightGray)
+    else:
+        lastText = nextFont.render('Last', True, black, gray)
+
+    if selected == "upcnum":
+        increaseCarbonsText = surveyFont.render('^', True, white, lightGray)
+    else:
+        increaseCarbonsText = surveyFont.render('^', True, black, gray)
+
+    if selected == "downcnum":
+        decreaseCarbonsText = surveyFont.render('v', True, white, lightGray)
+    else:
+        decreaseCarbonsText = surveyFont.render('v', True, black, gray)
+
+    if selected == "uphnum":
+        increaseHydrogensText = surveyFont.render('^', True, white, lightGray)
+    else:
+        increaseHydrogensText = surveyFont.render('^', True, black, gray)
+
+    if selected == "downhnum":
+        decreaseHydrogensText = surveyFont.render('v', True, white, lightGray)
+    else:
+        decreaseHydrogensText = surveyFont.render('v', True, black, gray)
+
+    carbonNumberText = surveyFont.render('Number of carbon atoms: ' + carbonNumberBranchedStr, True, black)
+    hydrogenNumberText = surveyFont.render('Number of hydrogen atoms: ' + hydrogenNumberBranchedStr, True, black)
+
+    # Determine the length of each text block for positioning
+    nextTextRect = nextText.get_rect()
+    lastTextRect = lastText.get_rect()
+
+    # Place the text on the screen
+    screen.blit(nextText, (screenWidth - (screenWidth / 8) - (nextTextRect[2] / 2), 30))
+    screen.blit(lastText, (screenWidth / 8 - (lastTextRect[2] / 2), 30))
+    screen.blit(carbonNumberText, (40, 140))
+    screen.blit(hydrogenNumberText, (40, 220))
+    screen.blit(increaseCarbonsText, (420, 125))
+    screen.blit(decreaseCarbonsText, (420, 155))
+    screen.blit(increaseHydrogensText, (420, 205))
+    screen.blit(decreaseHydrogensText, (420, 235))
+
+def branchedInteractions():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: # Quit pygame
+            pygame.quit()
+            quit()
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70: # Selected next button
+            global cannotContinue
+            if cannotContinue == False:
+                global screenID
+                screenID = 3 # Move over to the display page
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70: # Selected last button
+            screenID = 2 # Move over to the survey page
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 125 and x <= 435 and y <= 150: # Selected increase carbons button
+            global carbonNumberBranched
+            if carbonNumberBranched < 6: # Increase carbons if the number of carbons is less than 6
+                carbonNumberBranched = carbonNumberBranched + 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 155 and x <= 435 and y <= 180: # Selected decrease carbons button
+            if carbonNumberBranched > 1: # Decrease carbons if the number of carbons is more than 1
+                carbonNumberBranched = carbonNumberBranched - 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 205 and x <= 435 and y <= 230: # Selected increase hydrogens button
+            global hydrogenNumberBranched
+            if hydrogenNumberBranched < 13: # Increase hydrogens if the number of hydrogens is less than the maximum
+                hydrogenNumberBranched = hydrogenNumberBranched + 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 235 and x <= 435 and y <= 260: # Selected decrease hydrogens button
+            if hydrogenNumberBranched > 3: # Decrease hydrogens if the number of hydrogens is more than 1
+                hydrogenNumberBranched = hydrogenNumberBranched - 1
+
+
 # Shows the display page with saved settings
 def goToSave():
     # The try command will catch out invalid saves
@@ -238,19 +352,39 @@ def goToSave():
         global carbonNumberStr
         global hydrogenNumberStr
         global cyclic
+        global branched
         global skeletal
         global saved
+        global branchList
         saved = True
         skeletal = False
         carbonNumber = int(dataList[0])
         hydrogenNumber = int(dataList[1])
         cyclicStr = str(dataList[2])
+        branchedStr = str(dataList[3])
+
+        dataPoint = 4
+        while True:
+            try:
+                branchList.append(dataList[dataPoint])
+            except:
+                break
+            dataPoint = dataPoint + 1
+
         if cyclicStr == "True":
             cyclic = True
         elif cyclicStr == "False":
             cyclic = False
         else:
-            cyclic = False
+            cyclic = False # Just in case the value is incorrectly saved
+
+        if branchedStr == "True":
+            branched = True
+        elif branchedStr == "False":
+            branched = False
+        else:
+            branched = False # Just in case the value is incorrectly saved
+
         carbonNumberStr = str(carbonNumber)
         hydrogenNumberStr = str(hydrogenNumber)
 
@@ -266,20 +400,29 @@ def hydrocarbonCheck():
     # If statements go through the list of inputs
     global cannotContinue
     global cyclic
+    global branched
+    global screenID
+    global carbonNumberBranched
+    global hydrogenNumberBranched
     cannotContinue = True
-    if cyclic == False:
-        if hydrogenNumber == (carbonNumber * 2) + 2:
-            cannotContinue = False
-        if hydrogenNumber == carbonNumber * 2:
-            cannotContinue = False
+
+    if screenID == 2:
+        if branched == True or cyclic == True:
+            if carbonNumber > 2:
+                if carbonNumber * 2 == hydrogenNumber:
+                    cannotContinue = False
+                elif (carbonNumber * 2) + 2 == hydrogenNumber:
+                    cannotContinue = False
+                elif carbonNumber == hydrogenNumber == 6 and branched == False:
+                    cannotContinue = False
+        else:
+            if carbonNumber * 2 == hydrogenNumber:
+                cannotContinue = False
+            elif (carbonNumber * 2) + 2 == hydrogenNumber:
+                cannotContinue = False
     else:
-        if carbonNumber > 2:
-            if hydrogenNumber == carbonNumber and carbonNumber >= 6:
-                cannotContinue = False
-            if hydrogenNumber == (carbonNumber * 2) + 2:
-                cannotContinue = False
-            if hydrogenNumber == carbonNumber * 2:
-                cannotContinue = False
+        if (carbonNumberBranched * 2) + 1 == hydrogenNumberBranched:
+            cannotContinue = False
 
 
 def surveyUI():
@@ -303,6 +446,8 @@ def surveyUI():
         selected = "next"
     elif x >= 130 and y >= 280 and x <= 170 and y <= 305:
         selected = "cyclic"
+    elif x >= 330 and y >= 280 and x <= 370 and y <= 305:
+        selected = "branched"
 
     # Set out colours/sections on screen
     screen.fill(veryLightGray)
@@ -315,6 +460,7 @@ def surveyUI():
 
     # Determine text appearance
     global cyclic
+    global branched
     if cyclic == True:
         if selected == "cyclic":
             cyclicChoiceText = surveyFont.render('Yes', True, white, lightGreen)
@@ -325,6 +471,17 @@ def surveyUI():
             cyclicChoiceText = surveyFont.render('No', True, white, lightRed)
         else:
             cyclicChoiceText = surveyFont.render('No', True, black, red)
+
+    if branched == True:
+        if selected == "branched":
+            branchedChoiceText = surveyFont.render('Yes', True, white, lightGreen)
+        else:
+            branchedChoiceText = surveyFont.render('Yes', True, black, green)
+    else:
+        if selected == "branched":
+            branchedChoiceText = surveyFont.render('No', True, white, lightRed)
+        else:
+            branchedChoiceText = surveyFont.render('No', True, black, red)
 
     if selected == "upcnum":
         increaseCarbonsText = surveyFont.render('^', True, white, lightGray)
@@ -360,6 +517,7 @@ def surveyUI():
     titleText = titleFont.render('Survey Page', True, black)
     hydrogenNumberText = surveyFont.render('Number of hydrogen atoms: ' + hydrogenNumberStr, True, black)
     cyclicText = surveyFont.render("Cyclic:", True, black)
+    branchedText = surveyFont.render("Branched:", True, black)
 
     # Determine the length of each text block for positioning
     titleTextRect = titleText.get_rect()
@@ -369,6 +527,8 @@ def surveyUI():
     # Place the text on the screen
     screen.blit(cyclicText, (40, 280))
     screen.blit(cyclicChoiceText, (130, 280))
+    screen.blit(branchedText, (200, 280))
+    screen.blit(branchedChoiceText, (330, 280))
     screen.blit(titleText, (screenWidth / 2 - (titleTextRect[2] / 2), 30))
     screen.blit(nextText, (screenWidth - (screenWidth / 8) - (nextTextRect[2] / 2), 30))
     screen.blit(lastText, (screenWidth / 8 - (lastTextRect[2] / 2), 30))
@@ -400,13 +560,17 @@ def surveyInteractions():
             if hydrogenNumber > 4: # Decrease hydrogens if the number of hydrogens is more than 1
                 hydrogenNumber = hydrogenNumber - 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70: # Selected next button
-            if cannotContinue == False: # If able to continue, reset saved variable and go to display page
+            if cannotContinue == False: # If able to continue, reset saved variable and go to display page / branched page
                 global screenID
                 global saved
                 global skeletal
+                global branched
                 saved = False
                 skeletal = False
-                screenID = 3
+                if branched == True:
+                    screenID = 5
+                else:
+                    screenID = 3
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70: # Selected last button
             screenID = 1 # Move over to the main menu
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 130 and y >= 280 and x <= 170 and y <= 305: # Selected cyclic button
@@ -415,6 +579,11 @@ def surveyInteractions():
                 cyclic = True
             else:
                 cyclic = False
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 330 and y >= 280 and x <= 370 and y <= 305: # Selected cyclic button
+            if branched == False:
+                branched = True
+            else:
+                branched = False
 
 
 # Generate the name of the hydrocarbon for the title of the display page
@@ -602,7 +771,11 @@ def displayInteractions():
             global screenID
             screenID = 1 # Move over to the main menu
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70: # Selected last button
-            screenID = 2 # Move over to the survey page
+            global branched
+            if branched == True:
+                screenID = 5 # Move over to the branched page
+            else:
+                screenID = 2 # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 160 and y >= 500 and x <= 175 and y <= 525: # Selected decrease stereoisomer number button
             global stereoisomerNumber
             if stereoisomerNumber > 1: # Decrease stereoisomer number if the stereoisomer number is more than 1
@@ -659,11 +832,14 @@ def removeData():
         try:
             for i in range(len(savedList)): # Identifies the list number based upon the current variables
                 variables = savedList[i].split()
-                cnumcompare = int(variables[0])
-                hnumcompare = int(variables[1])
+                carbonNumberCompare = int(variables[0])
+                hydrogenNumberCompare = int(variables[1])
+                cyclicCompare = bool(variables[2])
+                branchedCompare = bool(variables[3])
                 global carbonNumber
                 global hydrogenNumber
-                if carbonNumber == cnumcompare and hydrogenNumber == hnumcompare:
+                global branched
+                if carbonNumber == carbonNumberCompare and hydrogenNumber == hydrogenNumberCompare and branchedCompare == branched and cyclicCompare == cyclic:
                     savedList.pop(i)
                     with open("savedData.txt", mode="w", encoding="utf-8") as my_file: # Saves new data to ensure its read correctly upon sudden exit
                         for data in savedList:
@@ -677,8 +853,20 @@ def removeData():
 def saveData():
     global savedList
     global cyclic
+    global branched
+    global branchList
     cyclicStr = str(cyclic)
-    dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr
+    branchedStr = str(branched)
+    dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
+
+    dataPoint = 0
+    while True:
+        try:
+            dataToAdd = dataToAdd + " " + branchList[dataPoint]
+        except:
+            break
+        dataPoint = dataPoint + 1
+
     doNotAdd = False
     for i in range(len(savedList)): # Checks if data already exists
         if savedList[i] == dataToAdd or len(savedList) == 8: # Limit to saves is 8
@@ -750,11 +938,15 @@ def createHydrocarbon():
 # Defines type of hydrocarbon and calls relevant functions
 def defineHydrocarbonType():
     global cyclic
+    global branched
     if cyclic == True:
         printCyclic()
-    elif skeletal == True:
+        if branched == True:
+            addCyclicBranch()
+    elif skeletal == True or branched == True:
         if hydrogenNumber == (carbonNumber * 2) + 2:
             printSkeletal()
+            addBranch()
         elif hydrogenNumber == carbonNumber * 2:
             printSkeletal()
             alkeneSkeletal()
@@ -765,6 +957,14 @@ def defineHydrocarbonType():
         createHydrocarbon()
         alkene()
         printHydrocarbon()
+
+
+def addBranch():
+    pass
+
+
+def addCyclicBranch():
+    pass
 
 
 # Alters array for alkenes
