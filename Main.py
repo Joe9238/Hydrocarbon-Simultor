@@ -7,10 +7,12 @@ global carbonNumber
 global hydrogenNumber
 global carbonNumberBranched
 global hydrogenNumberBranched
+global branchList
 carbonNumber = 1
 hydrogenNumber = 4
 carbonNumberBranched = 1
 hydrogenNumberBranched = 3
+branchList = []
 
 pygame.init()
 
@@ -87,7 +89,7 @@ def homeUI():
         selected = "start"
     elif x >= 325 and y >= 360 and x <= 475 and y <= 410:
         selected = "saved"
-    elif x >= 345 and y >= 395 and x <= 455 and y <= 470:
+    elif x >= 345 and y >= 420 and x <= 455 and y <= 470:
         selected = "quit"
 
     # Set out colours/sections on screen
@@ -141,7 +143,7 @@ def homeInteractions():
             cyclic = False
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 345 and y >= 360 and x <= 455 and y <= 410: # Selected saved button
-            screenID = 4 # Move over to the saved page
+            screenID = 4  # Move over to the saved page
 
 
 # Display data for the saved page
@@ -204,6 +206,7 @@ def savedUI():
             dataText = nextFont.render(data, True, black)
             dataTextRect = dataText.get_rect()
             screen.blit(dataText, ((screenWidth / 8) - (dataTextRect[2] / 2) + (i * 140), 100 + (a * 60)))
+
 
     # Create and place the + and - buttons onto the screen
     for i in range(8):
@@ -310,6 +313,28 @@ def branchedUI():
     screen.blit(increaseHydrogensText, (420, 205))
     screen.blit(decreaseHydrogensText, (420, 235))
 
+    global branchList
+    for a in range(len(branchList)):
+        dataList = branchList[a].split(",")
+        counter = 0
+        while True:
+            try:
+                data = dataList[counter]
+                dataText = nextFont.render(data, True, black)
+                dataTextRect = dataText.get_rect()
+                screen.blit(dataText, (screenWidth - (screenWidth / 3) - (dataTextRect[2] / 2) + (counter * 140), 140 + (a * 60)))
+            except:
+                break
+            counter = counter + 1
+
+    # Create and place the - buttons onto the screen
+    for i in range(8):
+        removeText = nextFont.render(" - ", True, red)
+        if x >= 755 and y > 130 + (i * 60) and x <= screenWidth and y < 190 + (i * 60):
+            removeText = nextFont.render(" - ", True, red, lightRed)
+        screen.blit(removeText, (758, 140 + (60 * i)))
+
+
 def branchedInteractions():
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # Quit pygame
@@ -336,6 +361,36 @@ def branchedInteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 235 and x <= 435 and y <= 260: # Selected decrease hydrogens button
             if hydrogenNumberBranched > 3: # Decrease hydrogens if the number of hydrogens is more than 1
                 hydrogenNumberBranched = hydrogenNumberBranched - 1
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 755 and y >= 130 and x <= screenWidth and y <= 670:  # Selected - button
+            removeBranch()  # remove data
+
+
+def removeBranch():
+    try:
+        doNotSave = False
+        branchList.pop((y - 140) // 60)  # Identifies the list number based upon the coordinate of the button
+    except:
+        print("Could not delete")
+        doNotSave = True
+    finally:
+        if doNotSave == False:
+            global savedList
+            global cyclic
+            global branched
+            cyclicStr = str(cyclic)
+            branchedStr = str(branched)
+            savedList[dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
+
+            dataPoint = 0
+            while True:
+                try:
+                    savedList[dataID] = savedList[dataID] + " " + branchList[dataPoint]
+                except:
+                    break
+                dataPoint = dataPoint + 1
+            with open("savedData.txt", mode="w", encoding="utf-8") as my_file: # Saves new data to ensure its read correctly upon sudden exit
+                for data in savedList:
+                    my_file.write(data+"\n")
 
 
 # Shows the display page with saved settings
@@ -343,6 +398,7 @@ def goToSave():
     # The try command will catch out invalid saves
     try:
         # Determine the position of the data
+        global dataID
         dataID = ((y - 100) // 60)
         dataList = savedList[dataID].split()
 
@@ -811,6 +867,9 @@ def readData():
     except:
         print("No data found")
     finally:
+        for i in range(len(savedList)):
+            if savedList[i] == "" or savedList[i] == " ":
+                savedList.pop(i)
         print("Data gathered successfully")
 
 
@@ -858,7 +917,6 @@ def saveData():
     cyclicStr = str(cyclic)
     branchedStr = str(branched)
     dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
-
     dataPoint = 0
     while True:
         try:
