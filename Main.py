@@ -32,6 +32,7 @@ subscriptFont = pygame.font.SysFont('arial.ttf', 18)
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (112, 129, 140)
+lightBlack = (50, 50, 50)
 lightGray = (141, 154, 163)
 veryLightGray = (222, 214, 203)
 red = (255, 0, 0)
@@ -318,8 +319,8 @@ def branchedUI():
         dataTextRect = dataText.get_rect()
         screen.blit(
             dataText,
-            ((screenWidth - (screenWidth / 3) - (dataTextRect[2] / 2) +
-             140), 140 + (60 * i)))
+            ((screenWidth - (screenWidth / 3) - (dataTextRect[2] / 2) + 140),
+             140 + (60 * i)))
 
     # Create and place the - buttons onto the screen
     for i in range(len(branchList)):
@@ -342,10 +343,10 @@ def branchedInteractions():
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 125 and x <= 435 and y <= 150:  # Selected increase carbons button
             global carbonNumberBranched
-            if carbonNumberBranched < 6:  # Increase carbons if the number of carbons is less than 6
+            if carbonNumberBranched < 3:  # Increase carbons if the number of carbons is less than 3
                 carbonNumberBranched = carbonNumberBranched + 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 155 and x <= 435 and y <= 180:  # Selected decrease carbons button
-            if carbonNumberBranched > 1:  # Decrease carbons if the number of carbons is more than 1
+            if carbonNumberBranched > 0:  # Decrease carbons if the number of carbons is more than 0
                 carbonNumberBranched = carbonNumberBranched - 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 755 and y >= 130 and x <= screenWidth and y <= 670:  # Selected - button
             removeBranch()  # remove data
@@ -353,42 +354,61 @@ def branchedInteractions():
             submitBranch()
 
 
-def findMax():
-    global maxBranches
+def checkMax():
+    global cyclic
+    global carbonNumber
+    global overMaximum
+    branchList.append(carbonNumberBranched)
+    for i in range(len(branchList)):
+        branchList[i] = int(branchList[i])
+    overMaximum = False
     if cyclic == True:
-        maxBranches = carbonNumber
+        maxList = []
+        for i in range(carbonNumber):
+            maxList.append(3)
+    elif carbonNumber == 3:
+        maxList = [1]
+    elif carbonNumber == 4:
+        maxList = [1,1]
+    elif carbonNumber == 5:
+        maxList = [1,2,1]
+    elif carbonNumber == 6:
+        maxList = [1,2,2,1]
+    if len(branchList) <= len(maxList):
+        for i in range(len(branchList)):
+            if branchList[i] > maxList[i]:
+                overMaximum = True
     else:
-        if carbonNumber > hydrogenNumber * 2:
-            maxBranches = carbonNumber // 2
-        else:
-            maxBranches = (carbonNumber // 2) - 1
+        overMaximum = True
+    branchList.pop()
 
 
 def submitBranch():
     global carbonNumberBranched
-    carbonNumberBranchedStr = str(carbonNumberBranched)
-    branchList.append(carbonNumberBranchedStr)
     global savedList
     global cyclic
     global branched
     global dataID
     cyclicStr = str(cyclic)
     branchedStr = str(branched)
-    findMax()
-    if len(branchList) < maxBranches:
+    checkMax()
+    global overMaximum
+    if overMaximum == False:
         try:
             dataID = dataID + 1
             dataID = dataID - 1
         except:
             dataID = -1
         finally:
+            branchList.append(carbonNumberBranched)
             savedList[
                 dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
 
         dataPoint = 0
         while True:
             try:
-                savedList[dataID] = savedList[dataID] + " " + branchList[dataPoint]
+                savedList[
+                    dataID] = savedList[dataID] + " " + branchList[dataPoint]
             except:
                 break
             dataPoint = dataPoint + 1
@@ -647,16 +667,21 @@ def surveyInteractions():
             global carbonNumber
             if carbonNumber < 6:  # Increase carbons if the number of carbons is less than 6
                 carbonNumber = carbonNumber + 1
+                global branchList
+                branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 155 and x <= 435 and y <= 180:  # Selected decrease carbons button
             if carbonNumber > 1:  # Decrease carbons if the number of carbons is more than 1
                 carbonNumber = carbonNumber - 1
+                branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 205 and x <= 435 and y <= 230:  # Selected increase hydrogens button
             global hydrogenNumber
             if hydrogenNumber < 14:  # Increase hydrogens if the number of hydrogens is less than the maximum
                 hydrogenNumber = hydrogenNumber + 1
+                branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 235 and x <= 435 and y <= 260:  # Selected decrease hydrogens button
             if hydrogenNumber > 4:  # Decrease hydrogens if the number of hydrogens is more than 1
                 hydrogenNumber = hydrogenNumber - 1
+                branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:  # Selected next button
             if cannotContinue == False:  # If able to continue, reset saved variable and go to display page / branched page
                 global screenID
@@ -673,6 +698,7 @@ def surveyInteractions():
             screenID = 1  # Move over to the main menu
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 130 and y >= 280 and x <= 170 and y <= 305:  # Selected cyclic button
             global cyclic
+            branchList = []
             if cyclic == False:
                 cyclic = True
             else:
@@ -1087,7 +1113,57 @@ def defineHydrocarbonType():
 
 
 def addBranch():
-    pass
+    # Determine length of hydrocarbon
+    offsetX = 0
+    for i in range(carbonNumber - 1):
+        offsetX = offsetX + 75
+
+    # Base dimensions of bonds
+    length = 75
+    height = 75
+    # For alternating line direction
+    drawTop = True
+    drawForwards = True
+
+    # Calculate the starting points
+    startingPointX = (screenWidth // 3.5 - offsetX // 2) + length
+    startingPointY = (screenHeight // 2) - (height // 2) + height
+
+    # Print the hydrocarbon
+    offsetX = 0
+    for a in range(len(branchList)):
+        if (a % 2) == 0:
+            if branchList[a] == 1:
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX , startingPointY),
+                    (startingPointX + offsetX - length, startingPointY + height),
+                    2)
+            elif branchList[a] == 2:
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX, startingPointY),
+                    (startingPointX + offsetX - length, startingPointY + height),
+                    2)
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX - length, startingPointY + height),
+                    (startingPointX + offsetX, startingPointY + (2 * height)),
+                    2)
+        else:
+            if branchList[a] == 1:
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX, startingPointY - height),
+                    (startingPointX + offsetX - length, startingPointY - (2 * height)),
+                    2)
+            elif branchList[a] == 2:
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX, startingPointY - height),
+                    (startingPointX + offsetX - length, startingPointY - (2 * height)),
+                    2)
+                pygame.draw.line(
+                    screen, lightBlack, (startingPointX + offsetX - length, startingPointY - (2 * height)),
+                    (startingPointX + offsetX, startingPointY - (3 * height)),
+                    2)
+
+        offsetX = offsetX + 75
 
 
 def addCyclicBranch():
@@ -1103,9 +1179,11 @@ def addCyclicBranch():
         xPosition1 = (90 * cos(angle + angleIncrement)) + startingPointX
         yPosition1 = (90 * sin(angle + angleIncrement)) + startingPointY
         for i in range(branchList[a]):
-            xPosition2 = xPosition1 + (50 * cos((angle + angleIncrement + twist)))
-            yPosition2 = yPosition1 + (50 * sin((angle + angleIncrement + twist)))
-            pygame.draw.line(screen, black, (xPosition1, yPosition1),
+            xPosition2 = xPosition1 + (50 * cos(
+                (angle + angleIncrement + twist)))
+            yPosition2 = yPosition1 + (50 * sin(
+                (angle + angleIncrement + twist)))
+            pygame.draw.line(screen, lightBlack, (xPosition1, yPosition1),
                              (xPosition2, yPosition2), 2)
             if twist == 70:
                 twist = -70
@@ -1115,7 +1193,6 @@ def addCyclicBranch():
             yPosition1 = yPosition2
         twist = 70
         angle = angle + angleIncrement
-
 
 
 # Alters array for alkenes
