@@ -32,7 +32,6 @@ subscriptFont = pygame.font.SysFont('arial.ttf', 18)
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (112, 129, 140)
-lightBlack = (50, 50, 50)
 lightGray = (141, 154, 163)
 veryLightGray = (222, 214, 203)
 red = (255, 0, 0)
@@ -338,7 +337,8 @@ def branchedInteractions():
             quit()
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:  # Selected next button
             global screenID
-            screenID = 3  # Move over to the display page
+            if branchList != []:
+                screenID = 3  # Move over to the display page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:  # Selected last button
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 125 and x <= 435 and y <= 150:  # Selected increase carbons button
@@ -369,11 +369,11 @@ def checkMax():
     elif carbonNumber == 3:
         maxList = [1]
     elif carbonNumber == 4:
-        maxList = [1,1]
+        maxList = [1, 1]
     elif carbonNumber == 5:
-        maxList = [1,2,1]
+        maxList = [1, 2, 1]
     elif carbonNumber == 6:
-        maxList = [1,2,2,1]
+        maxList = [1, 2, 2, 1]
     if len(branchList) <= len(maxList):
         for i in range(len(branchList)):
             if branchList[i] > maxList[i]:
@@ -401,17 +401,11 @@ def submitBranch():
             dataID = -1
         finally:
             branchList.append(carbonNumberBranched)
-            savedList[
-                dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
-
-        dataPoint = 0
-        while True:
-            try:
-                savedList[
-                    dataID] = savedList[dataID] + " " + branchList[dataPoint]
-            except:
-                break
-            dataPoint = dataPoint + 1
+            branchListStr = ""
+            for i in range(len(branchList)):
+                branchListStr = branchListStr + str(branchList[i]) + " "
+        savedList[
+                dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr + " " + branchListStr
         with open(
                 "savedData.txt", mode="w", encoding="utf-8"
         ) as my_file:  # Saves new data to ensure its read correctly upon sudden exit
@@ -436,17 +430,12 @@ def removeBranch():
             global dataID
             cyclicStr = str(cyclic)
             branchedStr = str(branched)
+            branchListStr = ""
+            for i in range(len(branchList)):
+                branchListStr = branchListStr + str(branchList[i]) + " "
             savedList[
-                dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
+                dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr + " " + branchListStr
 
-            dataPoint = 0
-            while True:
-                try:
-                    savedList[dataID] = savedList[dataID] + " " + branchList[
-                        dataPoint]
-                except:
-                    break
-                dataPoint = dataPoint + 1
             with open(
                     "savedData.txt", mode="w", encoding="utf-8"
             ) as my_file:  # Saves new data to ensure its read correctly upon sudden exit
@@ -481,11 +470,8 @@ def goToSave():
         branchedStr = str(dataList[3])
 
         dataPoint = 4
-        while True:
-            try:
-                branchList.append(dataList[dataPoint])
-            except:
-                break
+        for i in range((len(dataList)) - 4):
+            branchList.append(int(dataList[dataPoint]))
             dataPoint = dataPoint + 1
 
         if cyclicStr == "True":
@@ -696,6 +682,7 @@ def surveyInteractions():
                     screenID = 3
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:  # Selected last button
             screenID = 1  # Move over to the main menu
+            branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 130 and y >= 280 and x <= 170 and y <= 305:  # Selected cyclic button
             global cyclic
             branchList = []
@@ -720,43 +707,420 @@ def generateName():
         suffix = "ane"
 
     # Prefix is based upon the number of carbons
+    global cyclic
     prefix = ""
     if carbonNumber == 1:
-        prefix = "Meth"
+        prefix = "meth"
     elif carbonNumber == 2:
-        prefix = "Eth"
+        prefix = "eth"
     elif carbonNumber == 3:
-        prefix = "Prop"
+        prefix = "prop"
     elif carbonNumber == 4:
-        prefix = "But"
+        prefix = "but"
     elif carbonNumber == 5:
-        prefix = "Pent"
+        prefix = "pent"
     elif carbonNumber == 6:
-        prefix = "Hex"
+        prefix = "hex"
 
-    global cyclic
     if cyclic == True:
         if carbonNumber == 3:
-            prefix = "Cycloprop"
+            prefix = "cycloprop"
         elif carbonNumber == 4:
-            prefix = "Cyclobut"
+            prefix = "cyclobut"
         elif carbonNumber == 5:
-            prefix = "Cyclopent"
+            prefix = "cyclopent"
         elif carbonNumber == 6:
             if hydrogenNumber == 6:
-                prefix = "Benz"
+                prefix = "benz"
             else:
-                prefix = "Cyclohex"
+                prefix = "cyclohex"
+
+    if branched == True and cyclic == True:
+        branchName = ""
+        methCount = 0
+        ethCount = 0
+        propCount = 0
+        shift = 0
+        methList = []
+        ethList = []
+        propList = []
+        methList2 = []
+        ethList2 = []
+        propList2 = []
+        branchList2 = branchList[:]
+
+        largestBranch = 0
+        for i in range(len(branchList2)):
+            if branchList2[i] > largestBranch:
+                largestBranch = branchList2[i]
+
+        while branchList2[0] < largestBranch:
+            branchList2.insert(0, branchList2.pop())
+            shift = shift + 1
+
+        for i in range(len(branchList2)):
+            if branchList2[i] == 3:
+                propList.append(i + 1)
+                propCount = propCount + 1
+            if branchList2[i] == 2:
+                ethList.append(i + 1)
+                ethCount = ethCount + 1
+            if branchList2[i] == 1:
+                methList.append(i + 1)
+                methCount = methCount + 1
+
+        branchList2.insert(0, branchList2.pop())
+        branchList2.reverse()
+        for i in range(len(branchList2)):
+            if branchList2[i] == 3:
+                propList2.append(i + 1)
+            if branchList2[i] == 2:
+                ethList2.append(i + 1)
+            if branchList2[i] == 1:
+                methList2.append(i + 1)
+
+        total = 0
+        total2 = 0
+        counterList = []
+        counterList2 = []
+        for i in range(len(methList)):
+            counterList.append(methList[i])
+            counterList2.append(methList2[i])
+
+        for i in range(len(ethList)):
+            counterList.append(ethList[i])
+            counterList2.append(ethList2[i])
+
+        for i in range(len(propList)):
+            counterList.append(propList[i])
+            counterList2.append(propList2[i])
+
+        for i in range(len(counterList)):
+            total = total + counterList[i]
+            total2 = total2 + counterList2[i]
+
+        previous = False
+        if total <= total2:
+            if len(methList) > 0:
+                previous = True
+                branchName = branchName + str(methList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(methList) == 1:
+                    branchName = branchName + "methyl"
+                elif len(methList) == 2:
+                    branchName = branchName + "dimethyl"
+                elif len(methList) == 3:
+                    branchName = branchName + "tetramethyl"
+                elif len(methList) == 4:
+                    branchName = branchName + "pentamethyl"
+                elif len(methList) == 5:
+                    branchName = branchName + "hexamethyl"
+                elif len(methList) == 6:
+                    branchName = branchName + "heptamethyl"
+
+            if len(ethList) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                else:
+                    branchName = branchName + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                previous = True
+                if len(ethList) == 1:
+                    branchName = branchName + "ethyl"
+                elif len(ethList) == 2:
+                    branchName = branchName + "diethyl"
+                elif len(ethList) == 3:
+                    branchName = branchName + "tetraethyl"
+                elif len(ethList) == 4:
+                    branchName = branchName + "pentaethyl"
+                elif len(ethList) == 5:
+                    branchName = branchName + "hexaethyl"
+                elif len(ethList) == 6:
+                    branchName = branchName + "heptaethyl"
+
+            if len(propList) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                else:
+                    branchName = branchName + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(propList) == 1:
+                    branchName = branchName + "propyl"
+                elif len(propList) == 2:
+                    branchName = branchName + "dipropyl"
+                elif len(propList) == 3:
+                    branchName = branchName + "tetrapropyl"
+                elif len(propList) == 4:
+                    branchName = branchName + "pentapropyl"
+                elif len(propList) == 5:
+                    branchName = branchName + "hexapropyl"
+                elif len(propList) == 6:
+                    branchName = branchName + "heptapropyl"
+        else:
+            if len(methList2) > 0:
+                previous = True
+                branchName = branchName + str(methList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(methList2) == 1:
+                    branchName = branchName + "methyl"
+                elif len(methList2) == 2:
+                    branchName = branchName + "dimethyl"
+                elif len(methList2) == 3:
+                    branchName = branchName + "tetramethyl"
+                elif len(methList2) == 4:
+                    branchName = branchName + "pentamethyl"
+                elif len(methList2) == 5:
+                    branchName = branchName + "hexamethyl"
+                elif len(methList2) == 6:
+                    branchName = branchName + "heptamethyl"
+
+            if len(ethList2) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                else:
+                    branchName = branchName + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                previous = True
+                if len(ethList2) == 1:
+                    branchName = branchName + "ethyl"
+                elif len(ethList2) == 2:
+                    branchName = branchName + "diethyl"
+                elif len(ethList2) == 3:
+                    branchName = branchName + "tetraethyl"
+                elif len(ethList2) == 4:
+                    branchName = branchName + "pentaethyl"
+                elif len(ethList2) == 5:
+                    branchName = branchName + "hexaethyl"
+                elif len(ethList2) == 6:
+                    branchName = branchName + "heptaethyl"
+
+            if len(propList2) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                else:
+                    branchName = branchName + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(propList2) == 1:
+                    branchName = branchName + "propyl"
+                elif len(propList2) == 2:
+                    branchName = branchName + "dipropyl"
+                elif len(propList2) == 3:
+                    branchName = branchName + "tetrapropyl"
+                elif len(propList2) == 4:
+                    branchName = branchName + "pentapropyl"
+                elif len(propList2) == 5:
+                    branchName = branchName + "hexapropyl"
+                elif len(propList2) == 6:
+                    branchName = branchName + "heptapropyl"
+    elif branched == True and cyclic == False:
+        branchName = ""
+        methCount = 0
+        ethCount = 0
+        propCount = 0
+        methList = []
+        ethList = []
+        propList = []
+        methList2 = []
+        ethList2 = []
+        propList2 = []
+        for i in range(len(branchList)):
+            if branchList[i] == 1:
+                methList.append(i + 1)
+                methList2.append(len(branchList) - i)
+                methCount = methCount + 1
+            elif branchList[i] == 2:
+                ethList.append(i + 1)
+                ethList2.append(len(branchList) - i)
+                ethCount = ethCount + 1
+            elif branchList[i] == 3:
+                propList.append(i + 1)
+                propList2.append(len(branchList) - i)
+                propCount = propCount + 1
+
+        total = 0
+        total2 = 0
+        counterList = []
+        counterList2 = []
+        for i in range(len(methList)):
+            counterList.append(methList[i])
+            counterList2.append(methList2[i])
+
+        for i in range(len(ethList)):
+            counterList.append(ethList[i])
+            counterList2.append(ethList2[i])
+
+        for i in range(len(propList)):
+            counterList.append(propList[i])
+            counterList2.append(propList2[i])
+
+        for i in range(len(counterList)):
+            total = total + counterList[i]
+            total2 = total2 + counterList2[i]
+
+        if stereoisomerNumber > len(counterList) / 2:
+            methList.reverse()
+            ethList.reverse()
+            propList.reverse()
+        else:
+            methList2.reverse()
+            ethList2.reverse()
+            propList2.reverse()
+
+        previous = False
+        if total <= total2:
+            if len(methList) > 0:
+                previous = True
+                branchName = branchName + str(methList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(methList) == 1:
+                    branchName = branchName + "methyl"
+                elif len(methList) == 2:
+                    branchName = branchName + "dimethyl"
+                elif len(methList) == 3:
+                    branchName = branchName + "tetramethyl"
+                elif len(methList) == 4:
+                    branchName = branchName + "pentamethyl"
+                elif len(methList) == 5:
+                    branchName = branchName + "hexamethyl"
+                elif len(methList) == 6:
+                    branchName = branchName + "heptamethyl"
+
+            if len(ethList) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(ethList).replace('[', "").replace("]", "").replace(" ",
+                                                                                                           "") + "-"
+                else:
+                    branchName = branchName + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                previous = True
+                if len(ethList) == 1:
+                    branchName = branchName + "ethyl"
+                elif len(ethList) == 2:
+                    branchName = branchName + "diethyl"
+                elif len(ethList) == 3:
+                    branchName = branchName + "tetraethyl"
+                elif len(ethList) == 4:
+                    branchName = branchName + "pentaethyl"
+                elif len(ethList) == 5:
+                    branchName = branchName + "hexaethyl"
+                elif len(ethList) == 6:
+                    branchName = branchName + "heptaethyl"
+
+            if len(propList) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(propList).replace('[', "").replace("]", "").replace(" ",
+                                                                                                            "") + "-"
+                else:
+                    branchName = branchName + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(propList) == 1:
+                    branchName = branchName + "propyl"
+                elif len(propList) == 2:
+                    branchName = branchName + "dipropyl"
+                elif len(propList) == 3:
+                    branchName = branchName + "tetrapropyl"
+                elif len(propList) == 4:
+                    branchName = branchName + "pentapropyl"
+                elif len(propList) == 5:
+                    branchName = branchName + "hexapropyl"
+                elif len(propList) == 6:
+                    branchName = branchName + "heptapropyl"
+        else:
+            if len(methList2) > 0:
+                previous = True
+                branchName = branchName + str(methList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(methList2) == 1:
+                    branchName = branchName + "methyl"
+                elif len(methList2) == 2:
+                    branchName = branchName + "dimethyl"
+                elif len(methList2) == 3:
+                    branchName = branchName + "tetramethyl"
+                elif len(methList2) == 4:
+                    branchName = branchName + "pentamethyl"
+                elif len(methList2) == 5:
+                    branchName = branchName + "hexamethyl"
+                elif len(methList2) == 6:
+                    branchName = branchName + "heptamethyl"
+
+            if len(ethList2) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(ethList2).replace('[', "").replace("]", "").replace(" ",
+                                                                                                            "") + "-"
+                else:
+                    branchName = branchName + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                previous = True
+                if len(ethList2) == 1:
+                    branchName = branchName + "ethyl"
+                elif len(ethList2) == 2:
+                    branchName = branchName + "diethyl"
+                elif len(ethList2) == 3:
+                    branchName = branchName + "tetraethyl"
+                elif len(ethList2) == 4:
+                    branchName = branchName + "pentaethyl"
+                elif len(ethList2) == 5:
+                    branchName = branchName + "hexaethyl"
+                elif len(ethList2) == 6:
+                    branchName = branchName + "heptaethyl"
+
+            if len(propList2) > 0:
+                if previous == True:
+                    branchName = branchName + "-" + str(propList2).replace('[', "").replace("]", "").replace(" ",
+                                                                                                             "") + "-"
+                else:
+                    branchName = branchName + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                if len(propList2) == 1:
+                    branchName = branchName + "propyl"
+                elif len(propList2) == 2:
+                    branchName = branchName + "dipropyl"
+                elif len(propList2) == 3:
+                    branchName = branchName + "tetrapropyl"
+                elif len(propList2) == 4:
+                    branchName = branchName + "pentapropyl"
+                elif len(propList2) == 5:
+                    branchName = branchName + "hexapropyl"
+                elif len(propList2) == 6:
+                    branchName = branchName + "heptapropyl"
+    else:
+        branchName = ""
+
+    if carbonNumber * 2 == hydrogenNumber:
+        if cyclic == False:
+            stereoisomerNumber2 = stereoisomerNumber
+            if stereoisomerNumber > len(counterList) / 2:
+                stereoisomerNumber2 = carbonNumber - stereoisomerNumber
+                for i in range(carbonNumber):
+                    code = chr(i + 128)
+                    codeStr = str(code)
+                    value = carbonNumber - i
+                    valueStr = str(value)
+                    branchName = branchName.replace(valueStr, codeStr)
+                for i in range(carbonNumber):
+                    code = i
+                    codeStr = str(code)
+                    value = chr(i + 128)
+                    valueStr = str(value)
+                    branchName = branchName.replace(valueStr, codeStr)
+        else:
+            stereoisomerNumber2 = stereoisomerNumber + shift - 1
+        if stereoisomerNumber2 > 6:
+            stereoisomerNumber2 = stereoisomerNumber2 - 6
+        stereoisomerNumberStr = str(stereoisomerNumber2)
+        if branched == True:
+            alkeneNumber = "-" + stereoisomerNumberStr + "-"
+        if stereoisomerNumber2 == 1:
+            alkeneNumber = ""
+    else:
+        alkeneNumber = ""
+
+    hydrocarbonName = branchName + prefix + alkeneNumber + suffix
+
     # If the name is incomplete, do not print any name
     if suffix == "" or prefix == "":
-        suffix = ""
-        prefix = ""
-    hydrocarbonName = prefix + suffix
+        hydrocarbonName = "Could not generate name"
 
     # create and place the hydrocarbon name on screen
-    nameText = titleFont.render(hydrocarbonName, True, black)
+    variableFont = pygame.font.SysFont('arial.ttf', 80)
+    nameText = variableFont.render(hydrocarbonName, True, black)
     nameTextRect = nameText.get_rect()
-    screen.blit(nameText, (screenWidth / 2 - (nameTextRect[2] / 2), 30))
+    loopNum = 0
+    while nameTextRect[2] > 470:
+        loopNum = loopNum + 1
+        variableFont = pygame.font.SysFont('arial.ttf', (80 - loopNum))
+        nameText = variableFont.render(hydrocarbonName, True, black)
+        nameTextRect = nameText.get_rect()
+
+    screen.blit(nameText, (screenWidth / 2 - (nameTextRect[2] / 2), 35))
 
 
 def displayUI():
@@ -870,7 +1234,12 @@ def displayUI():
             lastStereoisomerText,
             (screenWidth / 3.5 - (lastStereoisomerTextRect[2] / 2 + 60), 500))
 
-        chainNumberMax = carbonNumber // 2
+        if cyclic == True:
+            chainNumberMax = carbonNumber
+        elif cyclic == False and carbonNumber * 2 == hydrogenNumber:
+            chainNumberMax = carbonNumber - 1
+        else:
+            chainNumberMax = carbonNumber // 2
         chainMaxStr = str(chainNumberMax)
         chainNumberStr = str(stereoisomerNumber)
         chainCount = surveyFont.render(chainNumberStr + " / " + chainMaxStr,
@@ -924,6 +1293,10 @@ def displayInteractions():
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 280 and y >= 500 and x <= 295 and y <= 525:  # Selected increase stereoisomer number button
             global branchList
             if stereoisomerNumber < carbonNumber // 2:  # Increase stereoisomer number if the stereoisomer number is below maximum
+                stereoisomerNumber = stereoisomerNumber + 1
+            elif stereoisomerNumber < carbonNumber and cyclic == True:
+                stereoisomerNumber = stereoisomerNumber + 1
+            elif stereoisomerNumber < carbonNumber - 1 and carbonNumber * 2 == hydrogenNumber and cyclic == False:
                 stereoisomerNumber = stereoisomerNumber + 1
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 20 and y >= 530 and x <= 140 and y <= 555:  # Selected skeletal button
             global skeletal
@@ -1011,13 +1384,11 @@ def saveData():
     cyclicStr = str(cyclic)
     branchedStr = str(branched)
     dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
-    dataPoint = 0
-    while True:
-        try:
-            dataToAdd = dataToAdd + " " + branchList[dataPoint]
-        except:
-            break
-        dataPoint = dataPoint + 1
+    branchListStr = ""
+    for i in range(len(branchList)):
+        branchListStr = branchListStr + str(branchList[i]) + " "
+    savedList[
+        dataID] = dataToAdd + branchListStr
 
     doNotAdd = False
     for i in range(len(savedList)):  # Checks if data already exists
@@ -1103,6 +1474,7 @@ def defineHydrocarbonType():
         elif hydrogenNumber == carbonNumber * 2:
             printSkeletal()
             alkeneSkeletal()
+            addBranch()
     elif hydrogenNumber == (carbonNumber * 2) + 2:
         createHydrocarbon()
         printHydrocarbon()
@@ -1121,9 +1493,6 @@ def addBranch():
     # Base dimensions of bonds
     length = 75
     height = 75
-    # For alternating line direction
-    drawTop = True
-    drawForwards = True
 
     # Calculate the starting points
     startingPointX = (screenWidth // 3.5 - offsetX // 2) + length
@@ -1135,31 +1504,34 @@ def addBranch():
         if (a % 2) == 0:
             if branchList[a] == 1:
                 pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX , startingPointY),
-                    (startingPointX + offsetX - length, startingPointY + height),
-                    2)
+                    screen, black, (startingPointX + offsetX, startingPointY),
+                    (startingPointX + offsetX, startingPointY + height), 2)
             elif branchList[a] == 2:
+                pygame.draw.line(screen, black,
+                                 (startingPointX + offsetX, startingPointY),
+                                 (startingPointX + offsetX - length,
+                                  startingPointY + height), 2)
                 pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX, startingPointY),
-                    (startingPointX + offsetX - length, startingPointY + height),
-                    2)
-                pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX - length, startingPointY + height),
+                    screen, black, (startingPointX + offsetX - length,
+                                     startingPointY + height),
                     (startingPointX + offsetX, startingPointY + (2 * height)),
                     2)
         else:
             if branchList[a] == 1:
                 pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX, startingPointY - height),
-                    (startingPointX + offsetX - length, startingPointY - (2 * height)),
+                    screen, black,
+                    (startingPointX + offsetX, startingPointY - height),
+                    (startingPointX + offsetX, startingPointY - (2 * height)),
                     2)
             elif branchList[a] == 2:
                 pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX, startingPointY - height),
-                    (startingPointX + offsetX - length, startingPointY - (2 * height)),
-                    2)
+                    screen, black,
+                    (startingPointX + offsetX, startingPointY - height),
+                    (startingPointX + offsetX - length,
+                     startingPointY - (2 * height)), 2)
                 pygame.draw.line(
-                    screen, lightBlack, (startingPointX + offsetX - length, startingPointY - (2 * height)),
+                    screen, black, (startingPointX + offsetX - length,
+                                     startingPointY - (2 * height)),
                     (startingPointX + offsetX, startingPointY - (3 * height)),
                     2)
 
@@ -1183,7 +1555,7 @@ def addCyclicBranch():
                 (angle + angleIncrement + twist)))
             yPosition2 = yPosition1 + (50 * sin(
                 (angle + angleIncrement + twist)))
-            pygame.draw.line(screen, lightBlack, (xPosition1, yPosition1),
+            pygame.draw.line(screen, black, (xPosition1, yPosition1),
                              (xPosition2, yPosition2), 2)
             if twist == 70:
                 twist = -70
@@ -1297,7 +1669,7 @@ def printCyclic():
         pygame.draw.line(screen, black, (xPosition1, yPosition1),
                          (xPosition2, yPosition2), 2)
         if hydrogenNumber == carbonNumber * 2:
-            if point == 1:
+            if stereoisomerNumber - 1 == point:
                 xPosition1 = (80 * cos(angle)) + startingPointX
                 yPosition1 = (80 * sin(angle)) + startingPointY
                 xPosition2 = (
