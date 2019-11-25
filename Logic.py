@@ -34,9 +34,10 @@ def survey():
       except:
           print("Invalid input")
           print(" ")
+
     if hnum == (cnum * 2) + 2:
       break
-    elif hnum == cnum * 2 and cnum > 2:
+    elif hnum == cnum * 2 and cnum > 1:
       break
     else:
       print("Error - Invalid hydrocarbon entered.")
@@ -58,6 +59,8 @@ def startpos():
   startposy = (5 // 2)
   startposx = (rowlen // 2) 
 
+
+
 def createchain():
   array[startposy][0] = "H"
   array[startposy][rowlen-1] = "H"
@@ -71,6 +74,8 @@ def createchain():
     array[startposy+2][(2*x)+2] = "H"
     array[startposy][(2*x)+1] = "-"
 
+
+
 def definechain():
   if hnum == (cnum * 2) + 2:
       createchain()
@@ -79,6 +84,8 @@ def definechain():
       createchain()
       alkene()
       
+
+
 def alkane(): 
   printchain()
   
@@ -89,6 +96,9 @@ def alkane():
   print("The hydrocarbon is an alkane")
 
 def alkene():
+  global startposx
+  if cnum == 2:
+    startposx = startposx - 1
   for x in range(cnum // 2):
     array[startposy][startposx+(2*(x+1))-1] = "="
     array[startposy-2][startposx+(2*(x+1))-2] = " "
@@ -99,10 +109,10 @@ def alkene():
     printchain()
 
     array[startposy][startposx+(2*(x+1))-1] = "-"
-    array[startposy-2][startposx+(2*(x+1))] = "H"
-    array[startposy-2][startposx+(2*(x+2))] = "H"
-    array[startposy-1][startposx+(2*(x+1))] = "|"
-    array[startposy-1][startposx+(2*(x+2))] = "|"
+    array[startposy-2][startposx+(2*(x+1))-2] = "H"
+    array[startposy-2][startposx+(2*(x+2))-2] = "H"
+    array[startposy-1][startposx+(2*(x+1))-2] = "|"
+    array[startposy-1][startposx+(2*(x+2))-2] = "|"
 
   print("""
   """)
