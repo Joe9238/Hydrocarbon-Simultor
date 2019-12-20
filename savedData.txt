@@ -1,2 +1,4 @@
-6 12 False True 1 2 0 1 
-6 12 True True 0 1 0 0 2 1 
+2 6 False False
+5 10 False False
+6 12 False True 1 1 2 
+1 4 False False

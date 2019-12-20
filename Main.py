@@ -7,6 +7,8 @@ global carbonNumber
 global hydrogenNumber
 global carbonNumberBranched
 global branchList
+global dataID
+dataID = -1
 carbonNumber = 1
 hydrogenNumber = 4
 carbonNumberBranched = 1
@@ -141,7 +143,7 @@ def homeInteractions():
             branched = False
             cyclic = False
             screenID = 2  # Move over to the survey page
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 345 and y >= 360 and x <= 455 and y <= 410:  # Selected saved button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 325 and y >= 360 and x <= 475 and y <= 410:  # Selected saved button
             screenID = 4  # Move over to the saved page
 
 
@@ -152,18 +154,18 @@ def savedUI():
 
     # Determine what the cursor is hovering over
     selected = ""
-    if x >= 655 and y >= 30 and x <= 740 and y <= 70:
+    if x >= 645 and y >= 30 and x <= 760 and y <= 70:
         selected = "home"
 
     # Set out colours/sections on screen
     screen.fill(gray)
 
     pygame.draw.line(screen, black, (0, 97), (screenWidth, 97))
-    pygame.draw.line(screen, black, (755, 70), (755, 570))
-    pygame.draw.line(screen, black, (165, 70), (165, 570))
-    pygame.draw.line(screen, black, (310, 70), (310, 570))
-    pygame.draw.line(screen, black, (455, 70), (455, 570))
-    pygame.draw.line(screen, black, (43, 70), (43, 570))
+    pygame.draw.line(screen, black, (675, 70), (675, 570))
+    pygame.draw.line(screen, black, (250, 70), (250, 570))
+    pygame.draw.line(screen, black, (410, 70), (410, 570))
+    pygame.draw.line(screen, black, (535, 70), (535, 570))
+    pygame.draw.line(screen, black, (130, 70), (130, 570))
     for i in range(8):
         pygame.draw.line(screen, black, (0, 150 + (i * 60)),
                          (screenWidth, 150 + (i * 60)))
@@ -175,13 +177,19 @@ def savedUI():
         homeText = nextFont.render('Home', True, black)
 
     carbonsText = surveyFont.render('Carbons', True, black)
+    viewText = surveyFont.render('View', True, black)
+    removeText = surveyFont.render('Remove', True, black)
     cyclicValueText = surveyFont.render('Cyclic', True, black)
+    branchedValueText = surveyFont.render('Branched', True, black)
     limitText = surveyFont.render('You can save a maximum of 8 hydrocarbons.',
                                   True, black)
     hydrogensText = surveyFont.render('Hydrogens', True, black)
 
     # Determine the length of each text block for positioning
     homeTextRect = homeText.get_rect()
+    removeTextRect = removeText.get_rect()
+    viewTextRect = viewText.get_rect()
+    branchedValueTextRect = branchedValueText.get_rect()
     cyclicValueTextRect = cyclicValueText.get_rect()
     carbonsTextRect = carbonsText.get_rect()
     hydrogensTextRect = hydrogensText.get_rect()
@@ -190,19 +198,25 @@ def savedUI():
     # Place the text on the screen
     screen.blit(homeText,
                 (screenWidth - (screenWidth / 8) - (homeTextRect[2] / 2), 30))
+    screen.blit(branchedValueText,
+                ((screenWidth / 8) - (branchedValueTextRect[2] / 2) + 510, 70))
+    screen.blit(viewText,
+                ((screenWidth / 8) - (viewTextRect[2] / 2) + 635, 70))
+    screen.blit(removeText,
+                ((screenWidth / 8) - (removeTextRect[2] / 2) - 35, 70))
     screen.blit(cyclicValueText,
-                ((screenWidth / 8) - (cyclicValueTextRect[2] / 2) + 280, 70))
+                ((screenWidth / 8) - (cyclicValueTextRect[2] / 2) + 370, 70))
     screen.blit(carbonsText,
-                ((screenWidth / 8) - (carbonsTextRect[2] / 2), 70))
+                ((screenWidth / 8) - (carbonsTextRect[2] / 2) + 90, 70))
     screen.blit(hydrogensText,
-                ((screenWidth / 8) - (hydrogensTextRect[2] / 2) + 140, 70))
+                ((screenWidth / 8) - (hydrogensTextRect[2] / 2) + 230, 70))
     screen.blit(limitText, ((screenWidth / 2) - (limitTextRect[2] / 2), 573))
 
     # Create and place the text from the list onto the screen
     global savedList
     for a in range(len(savedList)):
         dataList = savedList[a].split()
-        for i in range(3):
+        for i in range(4):
             data = dataList[i]
             if data == "True":
                 data = "Yes"
@@ -211,20 +225,20 @@ def savedUI():
             dataText = nextFont.render(data, True, black)
             dataTextRect = dataText.get_rect()
             screen.blit(dataText,
-                        ((screenWidth / 8) - (dataTextRect[2] / 2) + (i * 140),
+                        ((screenWidth / 8) - (dataTextRect[2] / 2) + (i * 140) + 90,
                          100 + (a * 60)))
 
     # Create and place the + and - buttons onto the screen
     for i in range(8):
         removeText = nextFont.render(" - ", True, red)
         addText = nextFont.render(" + ", True, green)
-        if x >= 0 and y > 90 + (i * 60) and x <= 40 and y < 150 + (i * 60):
+        if x >= 40 and y > 90 + (i * 60) and x <= 80 and y < 150 + (i * 60):
             removeText = nextFont.render(" - ", True, red, lightRed)
-        elif x >= 755 and y > 90 + (
-                i * 60) and x <= screenWidth and y < 150 + (i * 60):
+        elif x >= 720 and y > 90 + (
+                i * 60) and x <= screenWidth - 35 and y < 150 + (i * 60):
             addText = nextFont.render(" + ", True, green, lightGreen)
-        screen.blit(removeText, (3, 100 + (60 * i)))
-        screen.blit(addText, (758, 100 + (60 * i)))
+        screen.blit(removeText, (40, 100 + (60 * i)))
+        screen.blit(addText, (720, 100 + (60 * i)))
 
 
 # Possible events for the saved page
@@ -233,12 +247,12 @@ def savedInteractions():
         if event.type == pygame.QUIT:  # Quit pygame
             pygame.quit()
             quit()
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:  # Selected home button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 645 and y >= 30 and x <= 760 and y <= 70:  # Selected home button
             global screenID
             screenID = 1  # Move over to the main menu
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 0 and y >= 90 and x <= 40 and y <= 630:  # Selected - button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 40 and y >= 90 and x <= 80 and y <= 630:  # Selected - button
             removeData()  # remove data
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 755 and y >= 90 and x <= screenWidth and y <= 630:
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 720 and y >= 90 and x <= screenWidth - 35 and y <= 630:
             goToSave()  # Go to the display page with saved settings
 
 
@@ -397,7 +411,7 @@ def submitBranch():
         try:
             dataID = dataID + 1
             dataID = dataID - 1
-        except:
+        except Exception:
             dataID = -1
         finally:
             branchList.append(carbonNumberBranched)
@@ -405,7 +419,7 @@ def submitBranch():
             for i in range(len(branchList)):
                 branchListStr = branchListStr + str(branchList[i]) + " "
         savedList[
-                dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr + " " + branchListStr
+            dataID] = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr + " " + branchListStr
         with open(
                 "savedData.txt", mode="w", encoding="utf-8"
         ) as my_file:  # Saves new data to ensure its read correctly upon sudden exit
@@ -419,7 +433,7 @@ def removeBranch():
         branchList.pop(
             (y - 140) // 60
         )  # Identifies the list number based upon the coordinate of the button
-    except:
+    except Exception:
         print("Could not delete")
         doNotSave = True
     finally:
@@ -494,7 +508,7 @@ def goToSave():
         # Go to display page
         global screenID
         screenID = 3
-    except:
+    except Exception:
         print("No data found")
 
 
@@ -539,9 +553,9 @@ def surveyUI():
         selected = "uphnum"
     elif x >= 420 and y >= 235 and x <= 435 and y <= 260:
         selected = "downhnum"
-    elif x >= 60 and y >= 30 and x <= 135 and y <= 70:
+    elif x >= 55 and y >= 30 and x <= 140 and y <= 70:
         selected = "last"
-    elif x >= 655 and y >= 30 and x <= 740 and y <= 70:
+    elif x >= 655 and y >= 30 and x <= 745 and y <= 70:
         selected = "next"
     elif x >= 130 and y >= 280 and x <= 170 and y <= 305:
         selected = "cyclic"
@@ -668,7 +682,7 @@ def surveyInteractions():
             if hydrogenNumber > 4:  # Decrease hydrogens if the number of hydrogens is more than 1
                 hydrogenNumber = hydrogenNumber - 1
                 branchList = []
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:  # Selected next button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 745 and y <= 70:  # Selected next button
             if cannotContinue == False:  # If able to continue, reset saved variable and go to display page / branched page
                 global screenID
                 global saved
@@ -680,7 +694,7 @@ def surveyInteractions():
                     screenID = 5
                 else:
                     screenID = 3
-        if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:  # Selected last button
+        if event.type == pygame.MOUSEBUTTONDOWN and x >= 55 and y >= 30 and x <= 140 and y <= 70:  # Selected last button
             screenID = 1  # Move over to the main menu
             branchList = []
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 130 and y >= 280 and x <= 170 and y <= 305:  # Selected cyclic button
@@ -803,7 +817,8 @@ def generateName():
         if total <= total2:
             if len(methList) > 0:
                 previous = True
-                branchName = branchName + str(methList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                branchName = branchName + str(methList).replace(
+                    '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(methList) == 1:
                     branchName = branchName + "methyl"
                 elif len(methList) == 2:
@@ -819,9 +834,11 @@ def generateName():
 
             if len(ethList) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + "-" + str(ethList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(ethList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 previous = True
                 if len(ethList) == 1:
                     branchName = branchName + "ethyl"
@@ -838,9 +855,11 @@ def generateName():
 
             if len(propList) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + "-" + str(propList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(propList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(propList) == 1:
                     branchName = branchName + "propyl"
                 elif len(propList) == 2:
@@ -856,7 +875,8 @@ def generateName():
         else:
             if len(methList2) > 0:
                 previous = True
-                branchName = branchName + str(methList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                branchName = branchName + str(methList2).replace(
+                    '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(methList2) == 1:
                     branchName = branchName + "methyl"
                 elif len(methList2) == 2:
@@ -872,9 +892,11 @@ def generateName():
 
             if len(ethList2) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + "-" + str(ethList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(ethList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 previous = True
                 if len(ethList2) == 1:
                     branchName = branchName + "ethyl"
@@ -891,9 +913,11 @@ def generateName():
 
             if len(propList2) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + "-" + str(propList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(propList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(propList2) == 1:
                     branchName = branchName + "propyl"
                 elif len(propList2) == 2:
@@ -906,6 +930,7 @@ def generateName():
                     branchName = branchName + "hexapropyl"
                 elif len(propList2) == 6:
                     branchName = branchName + "heptapropyl"
+
     elif branched == True and cyclic == False:
         branchName = ""
         methCount = 0
@@ -964,7 +989,8 @@ def generateName():
         if total <= total2:
             if len(methList) > 0:
                 previous = True
-                branchName = branchName + str(methList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                branchName = branchName + str(methList).replace(
+                    '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(methList) == 1:
                     branchName = branchName + "methyl"
                 elif len(methList) == 2:
@@ -980,10 +1006,11 @@ def generateName():
 
             if len(ethList) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(ethList).replace('[', "").replace("]", "").replace(" ",
-                                                                                                           "") + "-"
+                    branchName = branchName + "-" + str(ethList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(ethList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(ethList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 previous = True
                 if len(ethList) == 1:
                     branchName = branchName + "ethyl"
@@ -1000,10 +1027,11 @@ def generateName():
 
             if len(propList) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(propList).replace('[', "").replace("]", "").replace(" ",
-                                                                                                            "") + "-"
+                    branchName = branchName + "-" + str(propList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(propList).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(propList).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(propList) == 1:
                     branchName = branchName + "propyl"
                 elif len(propList) == 2:
@@ -1019,7 +1047,8 @@ def generateName():
         else:
             if len(methList2) > 0:
                 previous = True
-                branchName = branchName + str(methList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                branchName = branchName + str(methList2).replace(
+                    '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(methList2) == 1:
                     branchName = branchName + "methyl"
                 elif len(methList2) == 2:
@@ -1035,10 +1064,11 @@ def generateName():
 
             if len(ethList2) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(ethList2).replace('[', "").replace("]", "").replace(" ",
-                                                                                                            "") + "-"
+                    branchName = branchName + "-" + str(ethList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(ethList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(ethList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 previous = True
                 if len(ethList2) == 1:
                     branchName = branchName + "ethyl"
@@ -1055,10 +1085,11 @@ def generateName():
 
             if len(propList2) > 0:
                 if previous == True:
-                    branchName = branchName + "-" + str(propList2).replace('[', "").replace("]", "").replace(" ",
-                                                                                                             "") + "-"
+                    branchName = branchName + "-" + str(propList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 else:
-                    branchName = branchName + str(propList2).replace('[', "").replace("]", "").replace(" ", "") + "-"
+                    branchName = branchName + str(propList2).replace(
+                        '[', "").replace("]", "").replace(" ", "") + "-"
                 if len(propList2) == 1:
                     branchName = branchName + "propyl"
                 elif len(propList2) == 2:
@@ -1075,30 +1106,24 @@ def generateName():
         branchName = ""
 
     if carbonNumber * 2 == hydrogenNumber:
+        stereoisomerNumber2 = stereoisomerNumber
         if cyclic == False:
-            stereoisomerNumber2 = stereoisomerNumber
-            if stereoisomerNumber > len(counterList) / 2:
-                stereoisomerNumber2 = carbonNumber - stereoisomerNumber
-                for i in range(carbonNumber):
-                    code = chr(i + 128)
-                    codeStr = str(code)
-                    value = carbonNumber - i
-                    valueStr = str(value)
-                    branchName = branchName.replace(valueStr, codeStr)
-                for i in range(carbonNumber):
-                    code = i
-                    codeStr = str(code)
-                    value = chr(i + 128)
-                    valueStr = str(value)
-                    branchName = branchName.replace(valueStr, codeStr)
+            max = carbonNumber - 1
+            if stereoisomerNumber / max < 0.5 or stereoisomerNumber / max == 0.5:
+                alkeneNumber = stereoisomerNumber
+            else:
+                alkeneNumber = max - stereoisomerNumber + 1
+
+            alkeneNumber = str(alkeneNumber)
+            alkeneNumber = "-" + alkeneNumber + "-"
         else:
             stereoisomerNumber2 = stereoisomerNumber + shift - 1
-        if stereoisomerNumber2 > 6:
-            stereoisomerNumber2 = stereoisomerNumber2 - 6
+            if stereoisomerNumber2 > 6:
+                stereoisomerNumber2 = stereoisomerNumber2 - 6
         stereoisomerNumberStr = str(stereoisomerNumber2)
         if branched == True:
             alkeneNumber = "-" + stereoisomerNumberStr + "-"
-        if stereoisomerNumber2 == 1:
+        if alkeneNumber == "-1-":
             alkeneNumber = ""
     else:
         alkeneNumber = ""
@@ -1137,8 +1162,6 @@ def displayUI():
         selected = "nextStereoisomer"
     elif x >= 160 and y >= 500 and x <= 175 and y <= 525:
         selected = "lastStereoisomer"
-    elif x >= 50 and y >= 500 and x <= 110 and y <= 525:
-        selected = "save"
     elif x >= 20 and y >= 530 and x <= 140 and y <= 555:
         selected = "skeletal"
 
@@ -1162,8 +1185,6 @@ def displayUI():
     # Determine text appearance
     if saved == True:
         saveText = surveyFont.render('Save', True, black, green)
-    elif selected == "save":
-        saveText = surveyFont.render('Save', True, black, lightGreen)
     else:
         saveText = surveyFont.render('Save', True, black, lightGray)
 
@@ -1323,7 +1344,7 @@ def readData():
             for line in my_file:
                 if line != "":
                     savedList.append(line.rstrip("\n"))
-    except:
+    except Exception:
         print("No data found")
     finally:
         for i in range(len(savedList)):
@@ -1342,7 +1363,7 @@ def removeData():
             savedList.pop(
                 (y - 100) // 60
             )  # Identifies the list number based upon the coordinate of the button
-        except:
+        except Exception:
             print("Could not delete")
         finally:
             with open(
@@ -1358,8 +1379,18 @@ def removeData():
                 variables = savedList[i].split()
                 carbonNumberCompare = int(variables[0])
                 hydrogenNumberCompare = int(variables[1])
-                cyclicCompare = bool(variables[2])
-                branchedCompare = bool(variables[3])
+                cyclicCompareStr = str(variables[2])
+                branchedCompareStr = str(variables[3])
+
+                if cyclicCompareStr == "False":
+                    cyclicCompare = False
+                else:
+                    cyclicCompare = True
+                if branchedCompareStr == "False":
+                    branchedCompare = False
+                else:
+                    branchedCompare = True
+
                 global carbonNumber
                 global hydrogenNumber
                 global branched
@@ -1371,7 +1402,7 @@ def removeData():
                         for data in savedList:
                             my_file.write(data + "\n")
                     break  # Ensures only one data entry is deleted
-        except:
+        except Exception:
             print("Could not delete")
 
 
@@ -1381,19 +1412,19 @@ def saveData():
     global cyclic
     global branched
     global branchList
+    global dataID
     cyclicStr = str(cyclic)
     branchedStr = str(branched)
     dataToAdd = carbonNumberStr + " " + hydrogenNumberStr + " " + cyclicStr + " " + branchedStr
     branchListStr = ""
+
     for i in range(len(branchList)):
         branchListStr = branchListStr + str(branchList[i]) + " "
-    savedList[
-        dataID] = dataToAdd + branchListStr
+    dataToAdd = dataToAdd + branchListStr
 
     doNotAdd = False
     for i in range(len(savedList)):  # Checks if data already exists
-        if savedList[i] == dataToAdd or len(
-                savedList) == 8:  # Limit to saves is 8
+        if len(savedList) == 8:  # Limit to saves is 8
             doNotAdd = True  # True if data already exists
             global saved
             saved = False
@@ -1513,7 +1544,7 @@ def addBranch():
                                   startingPointY + height), 2)
                 pygame.draw.line(
                     screen, black, (startingPointX + offsetX - length,
-                                     startingPointY + height),
+                                    startingPointY + height),
                     (startingPointX + offsetX, startingPointY + (2 * height)),
                     2)
         else:
@@ -1531,7 +1562,7 @@ def addBranch():
                      startingPointY - (2 * height)), 2)
                 pygame.draw.line(
                     screen, black, (startingPointX + offsetX - length,
-                                     startingPointY - (2 * height)),
+                                    startingPointY - (2 * height)),
                     (startingPointX + offsetX, startingPointY - (3 * height)),
                     2)
 
@@ -1673,9 +1704,9 @@ def printCyclic():
                 xPosition1 = (80 * cos(angle)) + startingPointX
                 yPosition1 = (80 * sin(angle)) + startingPointY
                 xPosition2 = (
-                    80 * cos(angle + angleIncrement)) + startingPointX
+                                     80 * cos(angle + angleIncrement)) + startingPointX
                 yPosition2 = (
-                    80 * sin(angle + angleIncrement)) + startingPointY
+                                     80 * sin(angle + angleIncrement)) + startingPointY
                 pygame.draw.line(screen, black, (xPosition1, yPosition1),
                                  (xPosition2, yPosition2), 2)
         elif hydrogenNumber == carbonNumber:
