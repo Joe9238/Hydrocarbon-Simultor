@@ -433,8 +433,7 @@ def removeBranch():
         branchList.pop(
             (y - 140) // 60
         )  # Identifies the list number based upon the coordinate of the button
-    except Exception:
-        print("Could not delete")
+    except:
         doNotSave = True
     finally:
         if doNotSave == False:
@@ -508,9 +507,8 @@ def goToSave():
         # Go to display page
         global screenID
         screenID = 3
-    except Exception:
-        print("No data found")
-
+    except:
+        pass
 
 # Check if the hydrocarbon is valid
 def hydrocarbonCheck():
@@ -1117,13 +1115,6 @@ def generateName():
             alkeneNumber = str(alkeneNumber)
             alkeneNumber = "-" + alkeneNumber + "-"
         else:
-            stereoisomerNumber2 = stereoisomerNumber + shift - 1
-            if stereoisomerNumber2 > 6:
-                stereoisomerNumber2 = stereoisomerNumber2 - 6
-        stereoisomerNumberStr = str(stereoisomerNumber2)
-        if branched == True:
-            alkeneNumber = "-" + stereoisomerNumberStr + "-"
-        if alkeneNumber == "-1-":
             alkeneNumber = ""
     else:
         alkeneNumber = ""
@@ -1271,7 +1262,7 @@ def displayUI():
                     (screenWidth / 3.5 - (chainCountTextRect[2] / 2), 500))
 
     # Create and place the skeletal button on the screen if needed
-    if cyclic == False:
+    if cyclic == False and carbonNumber > 1:
         if skeletal == False:
             if selected == "skeletal":
                 skeletalText = surveyFont.render('Skeletal', True, white,
@@ -1344,13 +1335,10 @@ def readData():
             for line in my_file:
                 if line != "":
                     savedList.append(line.rstrip("\n"))
-    except Exception:
-        print("No data found")
     finally:
         for i in range(len(savedList)):
             if savedList[i] == "" or savedList[i] == " ":
                 savedList.pop(i)
-        print("Data gathered successfully")
 
 
 # Remove the data from the saved text file
@@ -1363,8 +1351,6 @@ def removeData():
             savedList.pop(
                 (y - 100) // 60
             )  # Identifies the list number based upon the coordinate of the button
-        except Exception:
-            print("Could not delete")
         finally:
             with open(
                     "savedData.txt", mode="w", encoding="utf-8"
@@ -1402,8 +1388,6 @@ def removeData():
                         for data in savedList:
                             my_file.write(data + "\n")
                     break  # Ensures only one data entry is deleted
-        except Exception:
-            print("Could not delete")
 
 
 # Saves data to text file
@@ -1441,7 +1425,6 @@ def getCoordinates():
     global x
     global y
     x, y = pygame.mouse.get_pos()
-    print(x, y)
 
 
 # ============================================================================
