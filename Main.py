@@ -83,7 +83,8 @@ def mainLoop():
 def homeUI():
     # Call other functions that need to be run on this page
     homeInteractions()
-
+    global branchList
+    branchList = []
     # Determine what the cursor is hovering over
     selected = ""
     if x >= 340 and y >= 300 and x <= 460 and y <= 350:
@@ -351,8 +352,9 @@ def branchedInteractions():
             quit()
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 655 and y >= 30 and x <= 740 and y <= 70:  # Selected next button
             global screenID
-            if branchList != []:
-                screenID = 3  # Move over to the display page
+            while len(branchList) != carbonNumber:
+                branchList.append(0)
+            screenID = 3  # Move over to the display page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 60 and y >= 30 and x <= 135 and y <= 70:  # Selected last button
             screenID = 2  # Move over to the survey page
         if event.type == pygame.MOUSEBUTTONDOWN and x >= 420 and y >= 125 and x <= 435 and y <= 150:  # Selected increase carbons button
@@ -433,8 +435,7 @@ def removeBranch():
         branchList.pop(
             (y - 140) // 60
         )  # Identifies the list number based upon the coordinate of the button
-    except Exception:
-        print("Could not delete")
+    except:
         doNotSave = True
     finally:
         if doNotSave == False:
@@ -508,8 +509,8 @@ def goToSave():
         # Go to display page
         global screenID
         screenID = 3
-    except Exception:
-        print("No data found")
+    except:
+        pass
 
 
 # Check if the hydrocarbon is valid
@@ -1105,30 +1106,7 @@ def generateName():
     else:
         branchName = ""
 
-    if carbonNumber * 2 == hydrogenNumber:
-        stereoisomerNumber2 = stereoisomerNumber
-        if cyclic == False:
-            max = carbonNumber - 1
-            if stereoisomerNumber / max < 0.5 or stereoisomerNumber / max == 0.5:
-                alkeneNumber = stereoisomerNumber
-            else:
-                alkeneNumber = max - stereoisomerNumber + 1
-
-            alkeneNumber = str(alkeneNumber)
-            alkeneNumber = "-" + alkeneNumber + "-"
-        else:
-            stereoisomerNumber2 = stereoisomerNumber + shift - 1
-            if stereoisomerNumber2 > 6:
-                stereoisomerNumber2 = stereoisomerNumber2 - 6
-        stereoisomerNumberStr = str(stereoisomerNumber2)
-        if branched == True:
-            alkeneNumber = "-" + stereoisomerNumberStr + "-"
-        if alkeneNumber == "-1-":
-            alkeneNumber = ""
-    else:
-        alkeneNumber = ""
-
-    hydrocarbonName = branchName + prefix + alkeneNumber + suffix
+    hydrocarbonName = branchName + prefix + suffix
 
     # If the name is incomplete, do not print any name
     if suffix == "" or prefix == "":
@@ -1344,13 +1322,10 @@ def readData():
             for line in my_file:
                 if line != "":
                     savedList.append(line.rstrip("\n"))
-    except Exception:
-        print("No data found")
     finally:
         for i in range(len(savedList)):
             if savedList[i] == "" or savedList[i] == " ":
                 savedList.pop(i)
-        print("Data gathered successfully")
 
 
 # Remove the data from the saved text file
@@ -1363,8 +1338,6 @@ def removeData():
             savedList.pop(
                 (y - 100) // 60
             )  # Identifies the list number based upon the coordinate of the button
-        except Exception:
-            print("Could not delete")
         finally:
             with open(
                     "savedData.txt", mode="w", encoding="utf-8"
@@ -1402,8 +1375,8 @@ def removeData():
                         for data in savedList:
                             my_file.write(data + "\n")
                     break  # Ensures only one data entry is deleted
-        except Exception:
-            print("Could not delete")
+        except:
+            pass
 
 
 # Saves data to text file
@@ -1441,7 +1414,6 @@ def getCoordinates():
     global x
     global y
     x, y = pygame.mouse.get_pos()
-    print(x, y)
 
 
 # ============================================================================
@@ -1532,12 +1504,12 @@ def addBranch():
     # Print the hydrocarbon
     offsetX = 0
     for a in range(len(branchList)):
-        if (a % 2) == 0:
-            if branchList[a] == 1:
+        if (a % 2) == 0: # Drawing above Vs drawing below
+            if branchList[a] == 1: # If the branch is 1 carbon long
                 pygame.draw.line(
                     screen, black, (startingPointX + offsetX, startingPointY),
                     (startingPointX + offsetX, startingPointY + height), 2)
-            elif branchList[a] == 2:
+            elif branchList[a] == 2: # If the branch is 1 carbon long
                 pygame.draw.line(screen, black,
                                  (startingPointX + offsetX, startingPointY),
                                  (startingPointX + offsetX - length,
@@ -1548,13 +1520,13 @@ def addBranch():
                     (startingPointX + offsetX, startingPointY + (2 * height)),
                     2)
         else:
-            if branchList[a] == 1:
+            if branchList[a] == 1:# If the branch is 1 carbon long
                 pygame.draw.line(
                     screen, black,
                     (startingPointX + offsetX, startingPointY - height),
                     (startingPointX + offsetX, startingPointY - (2 * height)),
                     2)
-            elif branchList[a] == 2:
+            elif branchList[a] == 2: # If the branch is 1 carbon long
                 pygame.draw.line(
                     screen, black,
                     (startingPointX + offsetX, startingPointY - height),
@@ -1565,36 +1537,45 @@ def addBranch():
                                     startingPointY - (2 * height)),
                     (startingPointX + offsetX, startingPointY - (3 * height)),
                     2)
-
+        # Move to next carbon
         offsetX = offsetX + 75
 
 
 def addCyclicBranch():
+    # Determine starting point
     startingPointX = screenWidth // 3.5
     startingPointY = screenHeight // 2
+    # Determine angle increment
     angleIncrement = 2 * pi / carbonNumber
     angle = 0
+    # Twist is the value that alters the branch angle
     twist = 70
     for i in range(len(branchList)):
+        # Ensure the branch list contains integers, not strings
         branchList[i] = int(branchList[i])
 
     for a in range(len(branchList)):
+        # Find the starting position on the hydrocarbon
         xPosition1 = (90 * cos(angle + angleIncrement)) + startingPointX
         yPosition1 = (90 * sin(angle + angleIncrement)) + startingPointY
         for i in range(branchList[a]):
+            # Add the branch lines to the hydrocarbon
             xPosition2 = xPosition1 + (50 * cos(
                 (angle + angleIncrement + twist)))
             yPosition2 = yPosition1 + (50 * sin(
                 (angle + angleIncrement + twist)))
             pygame.draw.line(screen, black, (xPosition1, yPosition1),
                              (xPosition2, yPosition2), 2)
+            # Alternate the direction of the branch chain
             if twist == 70:
                 twist = -70
             else:
                 twist = 70
             xPosition1 = xPosition2
             yPosition1 = yPosition2
+        # Reset the twist value
         twist = 70
+        # Increment the angle
         angle = angle + angleIncrement
 
 
